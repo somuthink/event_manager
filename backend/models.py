@@ -43,6 +43,8 @@ class User(Base):
     patronymic = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     is_organizer = Column(Boolean, default=False)
+    # год рождения
+    # 
     events = relationship("Association_user_event", back_populates="user")
     entries = relationship("Entry", back_populates="user")
 
