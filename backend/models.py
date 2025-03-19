@@ -1,0 +1,66 @@
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB, insert
+from datetime import datetime, timezone
+from .database import Base
+
+
+class Entry(Base):
+    __tablename__ = "timepad"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(ForeignKey("users.id"))
+    user = relationship("User")
+    event_id = Column(ForeignKey("events.id"))
+    event = relationship("Event")
+    action = Column(String)
+    time = Column(DateTime, default=datetime.now(timezone.utc))
+
+
+class Association_user_event(Base):
+    __tablename__ = "association_user_event"
+    user_id = Column(ForeignKey("users.id"), primary_key=True)
+    event_id = Column(ForeignKey("events.id"), primary_key=True)
+    extra_data = Column(JSONB)
+    user = relationship("User", back_populates="events")
+    event = relationship("Event", back_populates="members")
+
+
+class Association_event_news(Base):
+    __tablename__ = "association_event_news"
+    event_id = Column(ForeignKey("events.id"), primary_key=True)
+    news_id = Column(ForeignKey("news.id"), primary_key=True)
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    email = Column(String, nullable=True)
+    number = Column(Integer, nullable=True)
+    name = Column(String, nullable=True)
+    surname = Column(String, nullable=True)
+    patronymic = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    is_organizer = Column(Boolean, default=False)
+    events = relationship("Association_user_event", back_populates="user")
+    entries = relationship("Entry", back_populates="user")
+
+
+class Event(Base):
+    __tablename__ = "events"
+    id = Column(Integer, primary_key=True)
+    title = Column(String, index=True)
+    description = Column(String)
+    theme = Column(String)
+    members = relationship("Association_user_event", back_populates="event")
+    news = relationship("News", secondary="association_event_news", back_populates="events")
+    entries = relationship("Entry", back_populates="event")
+
+
+class News(Base):
+    __tablename__ = "news"
+    id = Column(Integer, primary_key=True)
+    title = Column(String, index=True)
+    description = Column(String)
+    events = relationship("Event", secondary="association_event_news", back_populates="news")
