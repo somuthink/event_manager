@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, DateTime, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB, insert
 from datetime import datetime, timezone
@@ -55,6 +55,7 @@ class Event(Base):
     title = Column(String, index=True)
     description = Column(String)
     theme = Column(String)
+    structure = Column(JSONB)
     members = relationship("Association_user_event", back_populates="event")
     news = relationship("News", secondary="association_event_news", back_populates="events")
     entries = relationship("Entry", back_populates="event")

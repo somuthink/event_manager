@@ -7,7 +7,7 @@ class EventBase(BaseModel):
     title: str
     description: str | None = None
     theme: str | None = None
-
+    structure: dict
 
 class EventCreate(EventBase):
     pass
