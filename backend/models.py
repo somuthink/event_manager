@@ -66,4 +66,5 @@ class News(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
     description = Column(String)
+    structure = Column(JSONB)
     events = relationship("Event", secondary="association_event_news", back_populates="news")

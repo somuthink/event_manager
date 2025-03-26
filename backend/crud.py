@@ -1,7 +1,10 @@
+import os
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 from . import models, schemas
 from passlib.context import CryptContext
 from multipledispatch import dispatch
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -178,3 +181,32 @@ def delete_entry(db: Session, entry_id: int):
     db.delete(db_entry)
     db.commit()
     return db_entry
+
+
+def create_images(files: list[UploadFile] | None = None):
+    # Создаем путь к директории
+    dir_path = f"files/"
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+    saved_files = []
+    
+    # Сохраняем каждый файл
+    for i, file_data in enumerate(files, 1):
+        try:
+            # Генерируем уникальное имя файла
+            # file_name = file_data.filename
+            file_path = os.path.join(dir_path, file_data.filename)
+            
+            # Сохраняем файл на диск
+            with open(file_path, "wb") as buffer:
+                buffer.write(file_data.file.read())
+            
+            saved_files.append(file_path)
+            
+        except Exception as e:
+            # Удаляем созданные файлы при ошибке
+            for file_for_delete in saved_files:
+                os.remove(file_for_delete)
+            raise RuntimeError(f"Failed to save file {file_data.filename}: {str(e)}") from e
+        
+        # os.path.splitext(file_data.filename)[1]
