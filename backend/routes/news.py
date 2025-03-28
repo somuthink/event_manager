@@ -20,13 +20,13 @@ def create_news(user: UserDep, news: schemas.NewsCreate, db: Session = Depends(g
         return crud.create_news(db, news)
 
 
-@router.get("/", response_model=list[schemas.News])
+@router.get("/", response_model=list[schemas.NewsRead])
 def read_news(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     news = crud.get_news(db, skip, limit)
     return news
 
 
-@router.get("/{news_id}", response_model=schemas.NewsBase)
+@router.get("/{news_id}", response_model=schemas.News)
 def read_news(news_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
     if db_news is None:

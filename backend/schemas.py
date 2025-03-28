@@ -7,7 +7,11 @@ class EventBase(BaseModel):
     title: str
     description: str | None = None
     theme: str | None = None
-    structure: dict
+
+
+class EventRead(EventBase):
+    id: int
+
 
 class EventCreate(EventBase):
     pass
@@ -18,12 +22,17 @@ class UpdateEvent(EventBase):
 
 
 class Event(EventBase):
+    structure: dict
     id: int
 
 
 class NewsBase(BaseModel):
     title: str
     description: str | None = None
+
+
+class NewsRead(NewsBase):
+    id: int
 
 
 class NewsCreate(NewsBase):
@@ -34,6 +43,7 @@ class UpdateNews(NewsBase):
     pass
 
 class News(NewsBase):
+    structure: dict
     id: int
 
 class Token(BaseModel):

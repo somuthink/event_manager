@@ -56,7 +56,7 @@ def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = 
 
 
 
-@router.get("/event-news/event/{event_id}", response_model=list[schemas.News])
+@router.get("/event-news/event/{event_id}", response_model=list[schemas.NewsRead])
 @organizer
 def read_news_of_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event(db, event_id)
@@ -66,7 +66,7 @@ def read_news_of_event(user: UserDep, event_id: int, db: Session = Depends(get_d
         return db_event.news
 
 
-@router.get("/event-news/news/{news_id}", response_model=list[schemas.Event])
+@router.get("/event-news/news/{news_id}", response_model=list[schemas.EventRead])
 @organizer
 def read_event_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
