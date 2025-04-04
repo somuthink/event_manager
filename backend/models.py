@@ -1,9 +1,11 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, DateTime, Date
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, DateTime, Date, ARRAY
+from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB, insert
 from datetime import datetime, timezone
-from .database import Base
 
+from .database import Base
+from .deps import *
 
 class Entry(Base):
     __tablename__ = "timepad"
@@ -43,8 +45,11 @@ class User(Base):
     patronymic = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     is_organizer = Column(Boolean, default=False)
-    # год рождения
-    # 
+    birthday = Column(Date)
+    UserAccess = Column(Enum(Access))
+    EventAccess = Column(Enum(Access))
+    NewsAccess = Column(Enum(Access))
+    CreateAccess = Column(ARRAY(Enum(Model)))
     events = relationship("Association_user_event", back_populates="user")
     entries = relationship("Entry", back_populates="user")
 
