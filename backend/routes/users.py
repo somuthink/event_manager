@@ -18,14 +18,12 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[schemas.User])
-@organizer
 def read_users(user: UserDep, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip, limit)
     return users
 
 
 @router.get("/{user_id}", response_model=schemas.UserBase)
-@owner_or_organizer
 def read_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     if db_user is None:
@@ -34,7 +32,6 @@ def read_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}")
-@owner_or_organizer
 def update_user(user: UserDep, 
     user_id: int, updated_user: schemas.UpdateUser, db: Session = Depends(get_db)
 ):
@@ -45,7 +42,6 @@ def update_user(user: UserDep,
 
 
 @router.delete("/{user_id}")
-@owner_or_organizer
 def delete_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.delete_user(db, user_id)
     if db_user is None:

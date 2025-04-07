@@ -21,10 +21,6 @@ SessionDep = Annotated[Session, Depends(get_db)]
 UserDep = Annotated[schemas.UserInDB, Depends(security.get_current_active_user)]
 
 class Access(Enum):
-    VIEW = 1
-    CHANGE = 2
-    DELETE = 3
-class CRUDAccess(Enum):
     CREATE = 0
     VIEW = 1
     CHANGE = 2
@@ -33,11 +29,11 @@ class Model(Enum):
     USER = 0
     EVENT = 1
     NEWS = 2
-class Right(schemas.BaseModel):
-    def __init__(self, access: CRUDAccess, model: Model):
+class Right:
+    def __init__(self, access: Access, model: Model):
         self.access = access
         self.model = model
-    access: CRUDAccess
+    access: Access
     model: Model
 
 
@@ -49,8 +45,8 @@ def check_right(right: Right):
             if user.is_organizer:
                 return handler(*args, **kwargs)
             else:
-                user_rights = [user.GlobalUserAccess, user.GlobalEventAccess, user.GlobalNewsAccess]
-                if right.access == CRUDAccess.CREATE:
+                user_rights = [user.UserAccess, user.EventAccess, user.NewsAccess]
+                if right.access == Access.CREATE:
                     if right.model in user.CreateAccess:
                         return handler(*args, **kwargs)
                     else:

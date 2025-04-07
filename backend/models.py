@@ -33,6 +33,24 @@ class Association_event_news(Base):
     news_id = Column(ForeignKey("news.id"), primary_key=True)
 
 
+class Access_event(Base):
+    __tablename__ = "access_event_table"
+    user_id = Column(ForeignKey("users.id"), primary_key=True)
+    event_id = Column(ForeignKey("events.id"), primary_key=True)
+    level = Column(Integer)
+    user = relationship("User")
+    event = relationship("Event")
+
+
+class Access_news(Base):
+    __tablename__ = "access_news_table"
+    user_id = Column(ForeignKey("users.id"), primary_key=True)
+    news_id = Column(ForeignKey("news.id"), primary_key=True)
+    level = Column(Integer)
+    user = relationship("User")
+    news = relationship("News")
+
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -46,10 +64,10 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_organizer = Column(Boolean, default=False)
     birthday = Column(Date)
-    UserAccess = Column(Enum(Access))
-    EventAccess = Column(Enum(Access))
-    NewsAccess = Column(Enum(Access))
-    CreateAccess = Column(ARRAY(Enum(Model)))
+    UserAccess = Column(Integer)
+    EventAccess = Column(Integer)
+    NewsAccess = Column(Integer)
+    CreateAccess = Column(ARRAY(Integer))
     events = relationship("Association_user_event", back_populates="user")
     entries = relationship("Entry", back_populates="user")
 

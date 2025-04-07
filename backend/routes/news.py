@@ -11,7 +11,6 @@ router = APIRouter(prefix="/news")
 
 
 @router.post("/", response_model=schemas.News)
-@organizer
 def create_news(user: UserDep, news: schemas.NewsCreate, db: Session = Depends(get_db)):
     db_news = crud.get_news_by_title(db, news.title)
     if db_news:
@@ -35,7 +34,6 @@ def read_news(news_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{news_id}")
-@organizer
 def update_news(user: UserDep, 
     news_id: int, updated_news: schemas.UpdateNews, db: Session = Depends(get_db)
 ):
@@ -46,7 +44,6 @@ def update_news(user: UserDep,
 
 
 @router.delete("/{news_id}")
-@organizer
 def delete_user(user: UserDep, news_id: int, db: Session = Depends(get_db)):
     db_news = crud.delete_news(db, news_id)
     if db_news is None:

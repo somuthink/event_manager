@@ -11,7 +11,6 @@ from ..deps import *
 router = APIRouter(prefix="/relationships")
 
 @router.get("/user-event/event/{event_id}", response_model=list[schemas.Association_user])
-@organizer
 def read_members_of_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event(db, event_id)
     if db_event is None:
@@ -21,7 +20,6 @@ def read_members_of_event(user: UserDep, event_id: int, db: Session = Depends(ge
 
 
 @router.get("/user-event/user/{user_id}", response_model=list[schemas.Association_event])
-@owner_or_organizer
 def read_user_events(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     if db_user is None:
@@ -31,7 +29,6 @@ def read_user_events(user: UserDep, user_id: int, db: Session = Depends(get_db))
 
 
 @router.post("/user-event", response_model=schemas.Association)
-@owner_or_organizer
 def create_user_event(user: UserDep, user_id: int, event_id: int, extra_data: dict, db: Session = Depends(get_db)):
     if crud.get_user(db, user_id) is None or crud.get_event(db, event_id) is None:
         raise HTTPException(status_code=404, detail="Event or User Not Found")
@@ -42,7 +39,6 @@ def create_user_event(user: UserDep, user_id: int, event_id: int, extra_data: di
 
 
 @router.delete("/user-event", response_model=schemas.Association)
-@owner_or_organizer
 def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     db_event = crud.get_event(db, event_id)
@@ -57,7 +53,6 @@ def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = 
 
 
 @router.get("/event-news/event/{event_id}", response_model=list[schemas.NewsRead])
-@organizer
 def read_news_of_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event(db, event_id)
     if db_event is None:
@@ -67,7 +62,6 @@ def read_news_of_event(user: UserDep, event_id: int, db: Session = Depends(get_d
 
 
 @router.get("/event-news/news/{news_id}", response_model=list[schemas.EventRead])
-@organizer
 def read_event_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
     if db_news is None:
@@ -77,7 +71,6 @@ def read_event_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/event-news")
-@organizer
 def create_event_news(user: UserDep, news_id: int, event_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
     db_event = crud.get_event(db, event_id)
@@ -92,7 +85,6 @@ def create_event_news(user: UserDep, news_id: int, event_id: int, db: Session = 
 
 
 @router.delete("/event-news")
-@organizer
 def delete_event_news(user: UserDep, news_id: int, event_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
     db_event = crud.get_event(db, event_id)

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from sqlalchemy.dialects.postgresql import JSONB, insert
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 
 class EventBase(BaseModel):
@@ -14,7 +14,7 @@ class EventRead(EventBase):
 
 
 class EventCreate(EventBase):
-    pass
+    structure: dict
 
 
 class UpdateEvent(EventBase):
@@ -36,7 +36,7 @@ class NewsRead(NewsBase):
 
 
 class NewsCreate(NewsBase):
-    pass
+    structure: dict
 
 
 class UpdateNews(NewsBase):
@@ -63,7 +63,7 @@ class UserBase(BaseModel):
     surname: str | None = None
     patronymic: str | None = None
     is_active: bool | None = None
-
+    birthday: date | None = None
 
 class User(UserBase):
     id: int
