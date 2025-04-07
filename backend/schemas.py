@@ -4,7 +4,7 @@ from datetime import datetime, timezone, date
 
 
 class EventBase(BaseModel):
-    title: str
+    title: str | None = None
     description: str | None = None
     theme: str | None = None
 
@@ -18,7 +18,7 @@ class EventCreate(EventBase):
 
 
 class UpdateEvent(EventBase):
-    pass
+    structure: dict | None = None
 
 
 class Event(EventBase):
@@ -27,7 +27,7 @@ class Event(EventBase):
 
 
 class NewsBase(BaseModel):
-    title: str
+    title: str | None = None
     description: str | None = None
 
 
@@ -40,7 +40,7 @@ class NewsCreate(NewsBase):
 
 
 class UpdateNews(NewsBase):
-    pass
+    structure: dict | None = None
 
 class News(NewsBase):
     structure: dict
@@ -125,3 +125,10 @@ class EntryInDB(EntryBase):
     event_id: int
     user: User
     event: Event
+
+
+class RightSchema(BaseModel):
+    UserAccess: int = -1
+    EventAccess: int = 1
+    NewsAccess: int = 1
+    CreateAccess: list[int] = []

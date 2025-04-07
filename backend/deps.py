@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from functools import wraps
 from . import schemas
 from . import security
-import enum
+# from enum import Enum
 from sqlalchemy import Enum
 
 
@@ -22,8 +22,8 @@ UserDep = Annotated[schemas.UserInDB, Depends(security.get_current_active_user)]
 
 class Access(Enum):
     CREATE = 0
-    VIEW = 1
-    CHANGE = 2
+    READ = 1
+    UPDATE = 2
     DELETE = 3
 class Model(Enum):
     USER = 0
@@ -37,8 +37,8 @@ class Right:
     model: Model
 
 
-def check_right(right: Right):
-    def isorganizer(handler):
+def check(rights: list[Right]):
+    def decorator(handler):
         @wraps(handler)
         def wrapper(*args, **kwargs):
             user = kwargs.get('user')
@@ -46,21 +46,20 @@ def check_right(right: Right):
                 return handler(*args, **kwargs)
             else:
                 user_rights = [user.UserAccess, user.EventAccess, user.NewsAccess]
-                if right.access == Access.CREATE:
-                    if right.model in user.CreateAccess:
+                for right in rights:
+                    if right.access == Access.CREATE:
+                        if right.model in user.CreateAccess:
+                            return handler(*args, **kwargs)
+                    elif user_rights[right.model] >= right.access:
                         return handler(*args, **kwargs)
-                    else:
-                        raise HTTPException(status_code=405)
-                elif user_rights[right.model] >= right.access:
-                    return handler(*args, **kwargs)
                 else:
                     raise HTTPException(status_code=405)
         return wrapper
-    return isorganizer
+    return decorator
 
 
-def owner_or_check_right(right: Right):
-    def owner_or_organizer(handler):
+def owner_or_check(rights: list[Right]):
+    def decorator(handler):
         @wraps(handler)
         def wrapper(*args, **kwargs):
             user = kwargs.get('user')
@@ -68,6 +67,6 @@ def owner_or_check_right(right: Right):
             if user.id == user_id:
                 return handler(*args, **kwargs)
             else:
-                return check_right(right)(handler)(*args, **kwargs)
+                return check(rights)(handler)(*args, **kwargs)
         return wrapper
-    return owner_or_organizer
+    return decorator

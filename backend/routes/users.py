@@ -18,6 +18,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[schemas.User])
+@check([Right(Access.READ, Model.USER)])
 def read_users(user: UserDep, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip, limit)
     return users
@@ -54,3 +55,17 @@ async def read_users_me(
     current_user: UserDep,
 ):
     return current_user
+
+
+@router.put("/give-right/{user_id}")
+def give_right(rights: list[schemas.RightSchema], user_id: int, db: Session = Depends(get_db)):
+    user_to_update = crud.get_user(db, user_id)
+    if user_to_update:
+        for right in rights:
+            for key, value in right.model_dump(exclude_unset=True).items():
+                setattr(user_to_update, key, value)
+        db.commit()
+        db.refresh(user_to_update)
+        return user_to_update
+    else:
+        raise HTTPException(404, "Could not update")
