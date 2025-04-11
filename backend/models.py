@@ -38,7 +38,7 @@ class Access_event(Base):
     user_id = Column(ForeignKey("users.id"), primary_key=True)
     event_id = Column(ForeignKey("events.id"), primary_key=True)
     level = Column(Integer)
-    user = relationship("User")
+    user = relationship("User", back_populates="local_event_access")
     event = relationship("Event")
 
 
@@ -47,7 +47,7 @@ class Access_news(Base):
     user_id = Column(ForeignKey("users.id"), primary_key=True)
     news_id = Column(ForeignKey("news.id"), primary_key=True)
     level = Column(Integer)
-    user = relationship("User")
+    user = relationship("User", back_populates="local_news_access")
     news = relationship("News")
 
 
@@ -70,6 +70,8 @@ class User(Base):
     CreateAccess = Column(ARRAY(Integer), default=[])
     events = relationship("Association_user_event", back_populates="user")
     entries = relationship("Entry", back_populates="user")
+    local_event_access = relationship("Access_event", back_populates="user")
+    local_news_access = relationship("Access_news", back_populates="user")
 
 
 class Event(Base):

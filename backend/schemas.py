@@ -66,8 +66,11 @@ class UserBase(BaseModel):
     birthday: date | None = None
 
 class User(UserBase):
-    id: int
     is_organizer: bool | None = None
+    UserAccess: int | None
+    EventAccess: int | None
+    NewsAccess: int | None
+    CreateAccess: list[int] | None
 
 class UpdateUser(UserBase):
     pass
@@ -128,7 +131,7 @@ class EntryInDB(EntryBase):
 
 
 class RightSchema(BaseModel):
-    UserAccess: int = -1
-    EventAccess: int = 1
-    NewsAccess: int = 1
-    CreateAccess: list[int] = []
+    UserAccess: int | None
+    EventAccess: int | None
+    NewsAccess: int | None
+    CreateAccess: list[int] | None = set()

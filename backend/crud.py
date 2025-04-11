@@ -31,7 +31,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def update_user(db: Session, user_id: int, updated_user: schemas.UserBase):
+def update_user(db: Session, user_id: int, updated_user: schemas.User):
     user_to_update = db.query(models.User).filter(models.User.id == user_id).first()
     if user_to_update:
         for key, value in updated_user.model_dump(exclude_unset=True).items():
@@ -155,6 +155,50 @@ def delete_association(db: Session, user_id: int, event_id: int):
     db.delete(db_association)
     db.commit()
     return db_association
+
+
+
+
+def get_access_event_association(db: Session, user_id: int, event_id: int):
+    return db.query(models.Access_event).filter(models.Access_event.user_id == user_id).filter(models.Access_event.event_id == event_id).first()
+
+
+def create_access_event_association(db: Session, user_id: int, event_id: int, level: int):
+    db_association = models.Access_event(user = get_user(db, user_id), event = get_event(db, event_id), level = level)
+    db.add(db_association)
+    db.commit()
+    db.refresh(db_association)
+    return db_association
+
+
+def delete_access_event_association(db: Session, user_id: int, event_id: int):
+    db_association = get_association(db, user_id, event_id)
+    db.delete(db_association)
+    db.commit()
+    return db_association
+
+
+
+def get_access_news_association(db: Session, user_id: int, news_id: int):
+    return db.query(models.Access_news).filter(models.Access_news.user_id == user_id).filter(models.Access_news.news_id == news_id).first()
+
+
+def create_access_news_association(db: Session, user_id: int, news_id: int, level: int):
+    db_association = models.Access_news(user = get_user(db, user_id), news = get_news(db, news_id), level = level)
+    db.add(db_association)
+    db.commit()
+    db.refresh(db_association)
+    return db_association
+
+
+def delete_access_news_association(db: Session, user_id: int, news_id: int):
+    db_association = get_association(db, user_id, news_id)
+    db.delete(db_association)
+    db.commit()
+    return db_association
+
+
+
 
 def create_entry(db: Session, entry: schemas.EntryCreate):
     db_entry = models.Entry(**entry.model_dump())
