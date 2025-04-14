@@ -3,6 +3,16 @@ from sqlalchemy.dialects.postgresql import JSONB, insert
 from datetime import datetime, timezone, date
 
 
+class Access_event_schema(BaseModel):
+    level: int
+    event_id: int
+
+
+class Access_news_schema(BaseModel):
+    level: int
+    news_id: int
+
+
 class EventBase(BaseModel):
     title: str | None = None
     description: str | None = None
@@ -71,6 +81,8 @@ class User(UserBase):
     EventAccess: int | None
     NewsAccess: int | None
     CreateAccess: list[int] | None
+    local_event_access: list[Access_event_schema] | None
+    local_news_access: list[Access_news_schema] | None
 
 class UpdateUser(UserBase):
     pass
@@ -130,8 +142,14 @@ class EntryInDB(EntryBase):
     event: Event
 
 
-class RightSchema(BaseModel):
+class AccessSchema(BaseModel):
     UserAccess: int | None
     EventAccess: int | None
     NewsAccess: int | None
     CreateAccess: list[int] | None = set()
+
+
+class RightSchema(BaseModel):
+    access: int
+    model: int
+

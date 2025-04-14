@@ -172,7 +172,7 @@ def create_access_event_association(db: Session, user_id: int, event_id: int, le
 
 
 def delete_access_event_association(db: Session, user_id: int, event_id: int):
-    db_association = get_association(db, user_id, event_id)
+    db_association = get_access_event_association(db, user_id, event_id)
     db.delete(db_association)
     db.commit()
     return db_association
@@ -192,7 +192,7 @@ def create_access_news_association(db: Session, user_id: int, news_id: int, leve
 
 
 def delete_access_news_association(db: Session, user_id: int, news_id: int):
-    db_association = get_association(db, user_id, news_id)
+    db_association = get_access_news_association(db, user_id, news_id)
     db.delete(db_association)
     db.commit()
     return db_association

@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB, insert
 from datetime import datetime, timezone
 
 from .database import Base
-from .deps import *
+# from .deps import *
 
 class Entry(Base):
     __tablename__ = "timepad"

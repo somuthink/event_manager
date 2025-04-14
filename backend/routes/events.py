@@ -35,6 +35,7 @@ def read_event(event_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{event_id}")
+@check([Right(Access.UPDATE, Model.EVENT)])
 def update_event(user: UserDep, 
     event_id: int, updated_event: schemas.UpdateEvent, db: Session = Depends(get_db)
 ):

@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 from functools import wraps
 from . import schemas
 from . import security
+# from . import models
 # from enum import Enum
 from sqlalchemy import Enum
+# from pydantic import TypeAdapter
 
 
 def get_db():
@@ -53,7 +55,14 @@ def check(rights: list[Right]):
                     elif user_rights[right.model] >= right.access:
                         return handler(*args, **kwargs)
                 else:
-                    raise HTTPException(status_code=405)
+                    user_rights = [0, user.local_event_access, user.local_news_access]
+                    atrs = [0, 'event_id', 'news_id']
+                    entity_ids = [0, kwargs.get('event_id'), kwargs.get('news_id')]
+                    for right in rights:
+                        if right.model != Model.USER and entity_ids[right.model] in [local_access.__dict__.get(atrs[right.model]) if local_access.level >= right.access else None for local_access in user_rights[right.model]]:
+                            return handler(*args, **kwargs)
+                    else:
+                        raise HTTPException(status_code=405)
         return wrapper
     return decorator
 
