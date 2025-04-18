@@ -12,12 +12,14 @@ from ..deps import *
 router = APIRouter(prefix="/files")
 
 @router.post("/", response_class=Response)
+@check([])
 def upload_files(files: list[UploadFile]):
     crud.create_images(files)
     return Response(status_code=200)
 
 
 @router.get("/", response_class=FileResponse)
+@check([])
 def download_file(filename: str):
     if not os.path.isfile(f"files/{filename}"):
         raise HTTPException(status_code=404, detail="File Not Found")
@@ -26,6 +28,7 @@ def download_file(filename: str):
 
 
 @router.delete("/", response_class=Response)
+@check([])
 def delete_file(filename: str):
     if not os.path.isfile(f"files/{filename}"):
         raise HTTPException(status_code=404, detail="File Not Found")

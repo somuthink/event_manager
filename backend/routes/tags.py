@@ -11,6 +11,7 @@ from ..deps import *
 router = APIRouter(prefix="/tags")
 
 @router.post("/", response_model=schemas.Tag)
+@check([])
 def create_tag(name: str, db: Session = Depends(get_db)):
     db_tag = crud.get_tag(db, name)
     if db_tag:
@@ -24,6 +25,7 @@ def read_tags(db: Session = Depends(get_db)):
 
 
 @router.delete("/")
+@check([])
 def delete_tag(name: str, db: Session = Depends(get_db)):
     db_tag = crud.get_tag(db, name)
     if db_tag is None:

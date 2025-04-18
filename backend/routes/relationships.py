@@ -11,6 +11,7 @@ from ..deps import *
 router = APIRouter(prefix="/relationships")
 
 @router.get("/user-event/event/{event_id}", response_model=list[schemas.Association_user])
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
 def read_members_of_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event(db, event_id)
     if db_event is None:
@@ -20,6 +21,7 @@ def read_members_of_event(user: UserDep, event_id: int, db: Session = Depends(ge
 
 
 @router.get("/user-event/user/{user_id}", response_model=list[schemas.Association_event])
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
 def read_user_events(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     if db_user is None:
@@ -29,6 +31,7 @@ def read_user_events(user: UserDep, user_id: int, db: Session = Depends(get_db))
 
 
 @router.post("/user-event", response_model=schemas.Association)
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.USER)])
 def create_user_event(user: UserDep, user_id: int, event_id: int, extra_data: dict, db: Session = Depends(get_db)):
     if crud.get_user(db, user_id) is None or crud.get_event(db, event_id) is None:
         raise HTTPException(status_code=404, detail="Event or User Not Found")
@@ -39,6 +42,7 @@ def create_user_event(user: UserDep, user_id: int, event_id: int, extra_data: di
 
 
 @router.delete("/user-event", response_model=schemas.Association)
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.USER)])
 def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     db_event = crud.get_event(db, event_id)
@@ -71,6 +75,7 @@ def read_event_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/event-news")
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.NEWS)])
 def create_event_news(user: UserDep, news_id: int, event_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
     db_event = crud.get_event(db, event_id)
@@ -85,6 +90,7 @@ def create_event_news(user: UserDep, news_id: int, event_id: int, db: Session = 
 
 
 @router.delete("/event-news")
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.NEWS)])
 def delete_event_news(user: UserDep, news_id: int, event_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id)
     db_event = crud.get_event(db, event_id)

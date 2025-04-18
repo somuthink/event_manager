@@ -9,6 +9,7 @@ router = APIRouter(prefix="/users")
 
 
 @router.post("/", response_model=schemas.UserInDB)
+@check([Right(Access.CREATE, Model.USER)])
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, user.username)
     if db_user:
@@ -25,6 +26,7 @@ def read_users(user: UserDep, skip: int = 0, limit: int = 100, db: Session = Dep
 
 
 @router.get("/{user_id}", response_model=schemas.User)
+@check([Right(Access.READ, Model.USER)])
 def read_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     if db_user is None:
@@ -33,6 +35,7 @@ def read_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}")
+@check([Right(Access.UPDATE, Model.USER)])
 def update_user(user: UserDep, 
     user_id: int, updated_user: schemas.UpdateUser, db: Session = Depends(get_db)
 ):
@@ -43,6 +46,7 @@ def update_user(user: UserDep,
 
 
 @router.delete("/{user_id}")
+@check([Right(Access.DELETE, Model.USER)])
 def delete_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.delete_user(db, user_id)
     if db_user is None:

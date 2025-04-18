@@ -12,6 +12,7 @@ router = APIRouter(prefix="/events")
 
 
 @router.post("/", response_model=schemas.Event)
+@check([Right(Access.CREATE, Model.EVENT)])
 def create_event(user: UserDep, event: schemas.EventCreate, db: Session = Depends(get_db)):
     db_event = crud.get_event_by_title(db, event.title)
     if db_event:
@@ -46,6 +47,7 @@ def update_event(user: UserDep,
 
 
 @router.delete("/{event_id}")
+@check([Right(Access.DELETE, Model.EVENT)])
 def delete_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
     db_event = crud.delete_event(db, event_id)
     if db_event is None:

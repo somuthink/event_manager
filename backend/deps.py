@@ -57,7 +57,7 @@ def check(rights: list[Right]):
                 else:
                     user_rights = [None, user.local_event_access, user.local_news_access]
                     atrs = [None, 'event_id', 'news_id']
-                    entity_ids = [None, kwargs.get('event_id'), kwargs.get('news_id')]
+                    entity_ids = [None, kwargs.get('event_id') if kwargs.get('event_id') is not None else kwargs.get("entry").event_id, kwargs.get('news_id')]
                     for right in rights:
                         if right.model != Model.USER and entity_ids[right.model] in [local_access.__dict__.get(atrs[right.model]) for local_access in user_rights[right.model] if local_access.level >= right.access]:
                             return handler(*args, **kwargs)

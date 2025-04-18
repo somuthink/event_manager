@@ -46,6 +46,7 @@ def update_news(user: UserDep,
 
 
 @router.delete("/{news_id}")
+@check([Right(Access.DELETE, Model.NEWS)])
 def delete_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
     db_news = crud.delete_news(db, news_id)
     if db_news is None:
