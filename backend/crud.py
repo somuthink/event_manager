@@ -66,8 +66,11 @@ def get_event_by_title(db: Session, title: str):
 
 
 def create_event(db: Session, event: schemas.EventCreate):
-    db_event = models.Event(**event.model_dump())
+    data = event.model_dump()
+    data.pop("tags")
+    db_event = models.Event(**data)
     db.add(db_event)
+    db_event.tags = [models.Tag(**tag.model_dump()) for tag in event.tags]
     db.commit()
     db.refresh(db_event)
     return db_event
@@ -226,6 +229,28 @@ def delete_entry(db: Session, entry_id: int):
     db.commit()
     return db_entry
 
+
+def get_tag(db: Session, name: str):
+    return db.query(models.Tag).filter(models.Tag.name == name).first()
+
+
+def get_tags(db: Session):
+    return db.query(models.Tag).all()
+
+
+def create_tag(db: Session, name: str):
+        db_tag = models.Tag(name = name)
+        db.add(db_tag)
+        db.commit()
+        db.refresh(db_tag)
+        return db_tag
+
+
+def delete_tag(db: Session, name: str):
+    db_tag = get_tag(db, name)
+    db.delete(db_tag)
+    db.commit()
+    return db_tag
 
 def create_images(files: list[UploadFile] | None = None):
     # Создаем путь к директории

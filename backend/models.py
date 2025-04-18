@@ -18,6 +18,19 @@ class Entry(Base):
     time = Column(DateTime, default=datetime.now(timezone.utc))
 
 
+class Tag(Base):
+    __tablename__ = "tags"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    events = relationship("Event", secondary="tag_table", back_populates="tags")
+
+tag_table = Table(
+    "tag_table", Base.metadata,
+    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
+    Column("event_id", ForeignKey("events.id"), primary_key=True),
+)
+
+
 class Association_user_event(Base):
     __tablename__ = "association_user_event"
     user_id = Column(ForeignKey("users.id"), primary_key=True)
@@ -72,6 +85,7 @@ class User(Base):
     entries = relationship("Entry", back_populates="user")
     local_event_access = relationship("Access_event", back_populates="user")
     local_news_access = relationship("Access_news", back_populates="user")
+    tamplates = Column(ARRAY(JSONB))
 
 
 class Event(Base):
@@ -80,6 +94,11 @@ class Event(Base):
     title = Column(String, index=True)
     description = Column(String)
     theme = Column(String)
+    image = Column(String)
+    address = Column(String)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    tags = relationship("Tag", secondary="tag_table", back_populates="events")
     structure = Column(JSONB)
     members = relationship("Association_user_event", back_populates="event")
     news = relationship("News", secondary="association_event_news", back_populates="events")
@@ -91,5 +110,6 @@ class News(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
     description = Column(String)
+    image = Column(String)
     structure = Column(JSONB)
     events = relationship("Event", secondary="association_event_news", back_populates="news")

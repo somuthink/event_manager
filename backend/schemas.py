@@ -13,11 +13,19 @@ class Access_news_schema(BaseModel):
     news_id: int
 
 
+class Tag(BaseModel):
+    name: str
+
+
 class EventBase(BaseModel):
     title: str | None = None
     description: str | None = None
     theme: str | None = None
-
+    image: str
+    address: str
+    start_time: datetime
+    end_time: datetime
+    tags: list[Tag]
 
 class EventRead(EventBase):
     id: int
@@ -39,6 +47,7 @@ class Event(EventBase):
 class NewsBase(BaseModel):
     title: str | None = None
     description: str | None = None
+    image: str
 
 
 class NewsRead(NewsBase):
@@ -66,7 +75,7 @@ class TokenData(BaseModel):
 
 
 class UserBase(BaseModel):
-    username: str
+    username: str | None
     email: str | None = None
     number: int | None = None
     name: str | None = None
@@ -83,6 +92,7 @@ class User(UserBase):
     CreateAccess: list[int] | None
     local_event_access: list[Access_event_schema] | None
     local_news_access: list[Access_news_schema] | None
+    tamplates: list[dict] | None
 
 class UpdateUser(UserBase):
     pass
