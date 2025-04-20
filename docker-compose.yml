@@ -4,8 +4,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: root
+      
+      POSTGRES_PASSWORD: helloWorld1234
+      POSTGRES_USER: postgres
   adminer:
       image: dockette/adminer
       ports:
