@@ -3,4 +3,8 @@ dist/
 logs
 *.log
 
+.env
+.venv
+venv
+
 __pycache__
