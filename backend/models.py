@@ -64,6 +64,16 @@ class Access_news(Base):
     news = relationship("News")
 
 
+class Access_by_tag(Base):
+    __tablename__ = "access_by_tag_table"
+    user_id = Column(ForeignKey("users.id"), primary_key=True)
+    tag_id = Column(ForeignKey("tags.id"), primary_key=True)
+    access_level_to_events = Column(Integer)
+    access_level_to_news = Column(Integer)
+    user = relationship("User", back_populates="access_by_tag")
+    tag = relationship("Tag")
+
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -85,6 +95,7 @@ class User(Base):
     entries = relationship("Entry", back_populates="user")
     local_event_access = relationship("Access_event", back_populates="user")
     local_news_access = relationship("Access_news", back_populates="user")
+    access_by_tag = relationship("Access_by_tag", back_populates="user")
     tamplates = Column(ARRAY(JSONB))
 
 
