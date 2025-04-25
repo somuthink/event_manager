@@ -19,37 +19,17 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-const frameworks = [
-    {
-        value: "next.js",
-        label: "Next.js",
-    },
-    {
-        value: "sveltekit",
-        label: "SvelteKit",
-    },
-    {
-        value: "nuxt.js",
-        label: "Nuxt.js",
-    },
-    {
-        value: "remix",
-        label: "Remix",
-    },
-    {
-        value: "astro",
-        label: "Astro",
-    },
-]
+import { Combo } from "@/interfaces/interfaces"
+
 
 interface ComboBoxProps {
     placeholder: string
     description: string
-    data?: undefined
+    data: Combo[]
 
 }
 
-export function ComboBox({ placeholder, description }: ComboBoxProps) {
+export function ComboBox({ placeholder, description, data }: ComboBoxProps) {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
 
@@ -63,7 +43,7 @@ export function ComboBox({ placeholder, description }: ComboBoxProps) {
                     className={`w-full justify-between text-left font-normal border  px-5 ${!value && "text-muted-foreground"}`}
                 >
                     {value
-                        ? frameworks.find((framework) => framework.value === value)?.label
+                        ? initVals.find((frame) => frame.value === value)?.label
                         : placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -74,10 +54,10 @@ export function ComboBox({ placeholder, description }: ComboBoxProps) {
                     <CommandList>
                         <CommandEmpty>No framework found.</CommandEmpty>
                         <CommandGroup>
-                            {frameworks.map((framework) => (
+                            {data.map((frame) => (
                                 <CommandItem
-                                    key={framework.value}
-                                    value={framework.value}
+                                    key={frame.value}
+                                    value={frame.value}
                                     onSelect={(currentValue) => {
                                         setValue(currentValue === value ? "" : currentValue)
                                         setOpen(false)
@@ -86,10 +66,10 @@ export function ComboBox({ placeholder, description }: ComboBoxProps) {
                                     <Check
                                         className={cn(
                                             "mr-2 h-4 w-4",
-                                            value === framework.value ? "opacity-100" : "opacity-0"
+                                            value === frame.value ? "opacity-100" : "opacity-0"
                                         )}
                                     />
-                                    {framework.label}
+                                    {frame.label}
                                 </CommandItem>
                             ))}
                         </CommandGroup>
@@ -101,7 +81,7 @@ export function ComboBox({ placeholder, description }: ComboBoxProps) {
 }
 
 
-export function MultiComboBox({ placeholder, description }: ComboBoxProps) {
+export function MultiComboBox({ data, placeholder, description }: ComboBoxProps) {
     const [open, setOpen] = React.useState(false)
     const [values, setValues] = React.useState<string[]>()
 
@@ -112,10 +92,10 @@ export function MultiComboBox({ placeholder, description }: ComboBoxProps) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className={`w-full  justify-between text-left font-normal border  px-5 ${!values?.length && "text-muted-foreground"}`}
+                    className={`w-full justify-between text-left font-normal border px-5 ${!values?.length && "text-muted-foreground"}`}
                 >
                     {values?.length
-                        ? values
+                        ? `${values[0]}${values.length > 1 ? "..." : ""}`
                         : placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -126,10 +106,10 @@ export function MultiComboBox({ placeholder, description }: ComboBoxProps) {
                     <CommandList>
                         <CommandEmpty>No framework found.</CommandEmpty>
                         <CommandGroup>
-                            {frameworks.map((framework) => (
+                            {data.map((frame) => (
                                 <CommandItem
-                                    key={framework.value}
-                                    value={framework.value}
+                                    key={frame.value}
+                                    value={frame.value}
                                     onSelect={(currentValue) => {
                                         setValues((prevValues: string[] | undefined) => {
                                             if (!prevValues) {
@@ -144,10 +124,10 @@ export function MultiComboBox({ placeholder, description }: ComboBoxProps) {
                                     <Check
                                         className={cn(
                                             "mr-2 h-4 w-4",
-                                            values?.includes(framework.value) ? "opacity-100" : "opacity-0"
+                                            values?.includes(frame.value) ? "opacity-100" : "opacity-0"
                                         )}
                                     />
-                                    {framework.label}
+                                    {frame.label}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

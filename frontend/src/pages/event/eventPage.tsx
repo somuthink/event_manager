@@ -1,10 +1,10 @@
 import { EventCard } from "@/components/card/eventCard";
-import { Searchbar } from "@/components/input/searchbar";
+import { SearchBar } from "@/components/input/searchbar";
 import { axiosInst } from "@/api/axios";
 import { Event } from "@/interfaces/interfaces";
 import { useState, useCallback, useEffect, useRef } from "react";
 
-export const NewsPage = () => {
+export const EventsPage = () => {
 
     const PAGE_SIZE = 6;
 
@@ -21,14 +21,27 @@ export const NewsPage = () => {
 
         setIsLoading(true);
         try {
-            const response = await axiosInst.get<Event[]>(
-                `events/?skip=${offset}&limit=${PAGE_SIZE}`
-            );
+            // const response = await axiosInst.get<Event[]>(
+            //     `events/?skip=${offset}&limit=${PAGE_SIZE}`
+            // );
+            // 
+            // const newEvents = response.data;
 
-            const newEvents = response.data;
-            setEvents((prevEvents) => [...prevEvents, ...newEvents]);
+            const placeholderEvents: Event[] = Array.from({ length: PAGE_SIZE }, (_, i) => ({
+                id: offset + i,
+                title: `Это демо-событие ${offset + i + 1}`,
+                description: "Это плейсхолдер описания будущего события.",
+                imageUrl: "https://via.placeholder.com/300x200",
+                date: new Date().toISOString(),
+                theme: "",
+                location: "Demo City",
+            }));
 
-            if (newEvents.length < PAGE_SIZE) {
+            await new Promise((res) => setTimeout(res, 500));
+
+            setEvents((prevEvents) => [...prevEvents, ...placeholderEvents]);
+
+            if (placeholderEvents.length < PAGE_SIZE) {
                 setHasMore(false);
             } else {
                 setOffset((prevOffset) => prevOffset + PAGE_SIZE);
@@ -68,8 +81,8 @@ export const NewsPage = () => {
     }, [fetchEvents]);
 
     return (
-        <div className="flex flex-col gap-5 w-full">
-            <Searchbar />
+        <div className="flex flex-col items-center gap-5 w-full">
+            <SearchBar typo="event" />
             <div className="w-full grid lg:grid-cols-3 gap-5 grid-cols-2">
                 {events.map((event, index) => (
                     <EventCard key={index} event={event} />

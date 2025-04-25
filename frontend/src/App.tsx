@@ -3,11 +3,12 @@ import { AuthPage } from "./pages/auth/authPage";
 
 import { AuthProvider } from "./contexts/authContext";
 import { Toaster } from "@/components/ui/toaster";
-import { NewsPage } from "./pages/home/newsPage";
+import { NewsPage } from "./pages/news/newsPage";
 import { Navbar } from "./components/global/navbar";
 // import { CreateRoute } from "./pages/create/routes";
 import { CreateNewsPage } from "./pages/create/news";
 import { CreateEventPage } from "./pages/create/event";
+import { EventsPage } from "./pages/event/eventPage";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Routes>
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/" element={<NewsPage />} />
+                    <Route path="/events" element={<EventsPage />} />
                     <Route path="/create"  >
                         <Route path="news" element={<CreateNewsPage />} />
                         <Route path="event" element={<CreateEventPage />} />

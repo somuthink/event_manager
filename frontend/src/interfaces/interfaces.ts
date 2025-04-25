@@ -9,3 +9,8 @@ export interface Event {
     description: string;
     theme: string;
 }
+
+export interface Combo {
+    value: string;
+    label: string;
+}

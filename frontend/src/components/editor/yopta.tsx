@@ -1,4 +1,4 @@
-import YooptaEditor, { createYooptaEditor, SlateElement, YooptaPlugin, } from '@yoopta/editor';
+import YooptaEditor, { createYooptaEditor, SlateElement, YooptaPlugin, YooptaContentValue, YooptaOnChangeOptions } from '@yoopta/editor';
 
 import Paragraph from '@yoopta/paragraph';
 import Blockquote from '@yoopta/blockquote';
@@ -15,7 +15,7 @@ import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-lis
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
 import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { TypographyP } from '@/components/libraries/shadcn/TypographyP';
 import { TypographyH1 } from '@/components/libraries/shadcn/TypographyH1';
 import { TypographyH2 } from '@/components/libraries/shadcn/TypographyH2';
@@ -32,6 +32,7 @@ import {
     AccordionListItemHeading,
 } from '@/components/libraries/shadcn/Accordion';
 import { Slate } from 'slate-react';
+import { base } from '@/assets/templates/base';
 
 const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Record<string, unknown>>[] => [
     Paragraph.extend({
@@ -148,7 +149,16 @@ export const YooptaCn = () => {
     const editor = useMemo(() => createYooptaEditor(), []);
     const selectionRef = useRef(null);
 
+    const [value, setValue] = useState<YooptaContentValue>();
+
+    const onChange = (value: YooptaContentValue, options: YooptaOnChangeOptions) => {
+        setValue(value);
+        console.log(value)
+    };
+
     const plugins = useMemo(() => getPlugins(), []);
+
+    useEffect
 
     return (
         <div
@@ -156,11 +166,13 @@ export const YooptaCn = () => {
             ref={selectionRef}
         >
             <YooptaEditor
+                value={base}
                 width={"100%"}
                 editor={editor}
                 plugins={plugins}
                 tools={TOOLS}
                 marks={MARKS}
+                onChange={onChange}
                 selectionBoxRoot={selectionRef}
                 autoFocus
                 placeholder='нажмите / для выбора оформления или пишите простым текстом'
