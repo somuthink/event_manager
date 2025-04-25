@@ -25,7 +25,7 @@ def read_users(user: UserDep, skip: int = 0, limit: int = 100, db: Session = Dep
 
 
 @router.get("/{user_id}", response_model=schemas.User)
-@check([Right(Access.READ, Model.USER)])
+@owner_or_check([Right(Access.READ, Model.USER)])
 def read_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     if db_user is None:

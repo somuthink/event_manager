@@ -132,8 +132,8 @@ class EntryCreate(EntryBase):
 
 class Entry(EntryBase):
     id: int
-    user: User
-    event: Event
+    user_id: int
+    event_id: int
 
 class EntryDelete(EntryBase):
     user_id: int
