@@ -8,6 +8,7 @@ export interface Event {
     title: string;
     description: string;
     theme: string;
+    image: string;
 }
 
 export interface Combo {

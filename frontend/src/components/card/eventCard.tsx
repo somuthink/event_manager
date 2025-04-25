@@ -1,6 +1,4 @@
 import { Event } from "@/interfaces/interfaces";
-import placholder from "@/assets/placeholder.png";
-import { Badge } from "../ui/badge";
 
 export const EventCard = ({ event }: { event: Event }) => {
     return (
@@ -8,7 +6,7 @@ export const EventCard = ({ event }: { event: Event }) => {
 
             <div className="flex flex-row">
                 <img
-                    src={placholder}
+                    src={`/api/files/?filename=${event.image !== undefined && event.image !== "" ? event.image : "plc.png"}`}
                     className=" max-w-40 aspect-square rounded-[27px]"
                 />
                 <div className="flex  flex-col overflow-clip p-3 gap-3">

@@ -1,5 +1,5 @@
 export const base = {
-    "4177dbb6-b221-404c-b829-848bc6479663": {
+    "title": {
         "id": "4177dbb6-b221-404c-b829-848bc6479663",
         "type": "HeadingOne",
         "meta": {
@@ -8,7 +8,7 @@ export const base = {
         },
         "value": [
             {
-                "id": "cb2b0e52-c143-4ca9-ad05-c77f2ad4528e",
+                "id": "titleVal",
                 "type": "heading-one",
                 "props": {
                     "nodeType": "block"

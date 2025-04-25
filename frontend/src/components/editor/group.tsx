@@ -14,7 +14,7 @@ export const CreateGroup = ({ name, children }: CreateGroupProps) => {
 
             <a className="text-primary/80 border-b-1 px-4 py-2   border-accent-foreground border-dashed w-full">{name}</a>
 
-            <div className="w-full px-4 py-2">
+            <div className="w-full px-4 py-2 flex items-center justify-center">
                 {children}
             </div>
 
