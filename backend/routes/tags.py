@@ -12,12 +12,13 @@ router = APIRouter(prefix="/tags")
 
 @router.post("/", response_model=schemas.Tag)
 @check([])
-def create_tag(name: str, db: Session = Depends(get_db)):
+def create_tag(user: UserDep, name: str, db: Session = Depends(get_db)):
     db_tag = crud.get_tag(db, name)
     if db_tag:
         raise HTTPException(status_code=404, detail="Tag already exists")
     else:
         return crud.create_tag(db, name)
+
 
 @router.get("/", response_model=list[schemas.Tag])
 def read_tags(db: Session = Depends(get_db)):
@@ -26,7 +27,7 @@ def read_tags(db: Session = Depends(get_db)):
 
 @router.delete("/")
 @check([])
-def delete_tag(name: str, db: Session = Depends(get_db)):
+def delete_tag(user: UserDep, name: str, db: Session = Depends(get_db)):
     db_tag = crud.get_tag(db, name)
     if db_tag is None:
         raise HTTPException(404, "Tag Not Found")

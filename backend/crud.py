@@ -70,7 +70,7 @@ def create_event(db: Session, event: schemas.EventCreate):
     data.pop("tags")
     db_event = models.Event(**data)
     db.add(db_event)
-    db_event.tags = [models.Tag(**tag.model_dump()) for tag in event.tags]
+    db_event.tags = [get_tag(db, tag.name) for tag in event.tags]
     db.commit()
     db.refresh(db_event)
     return db_event
@@ -79,14 +79,17 @@ def create_event(db: Session, event: schemas.EventCreate):
 def update_event(db: Session, event_id: int, updated_event: schemas.EventBase):
     event_to_update = db.query(models.Event).filter(models.Event.id == event_id).first()
     if event_to_update:
-        for key, value in updated_event.model_dump(exclude_unset=True).items():
+        data = updated_event.model_dump(exclude_unset=True)
+        data.pop("tags")
+        event_to_update.tags = [get_tag(db, tag.name) for tag in updated_event.tags]
+        for key, value in data.items():
             setattr(event_to_update, key, value)
         db.commit()
         db.refresh(event_to_update)
         return event_to_update
     else:
         return None
-    
+
 
 def delete_event(db: Session, event_id: int):
     event_to_delete = db.query(models.Event).filter(models.Event.id == event_id).first()

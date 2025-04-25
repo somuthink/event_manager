@@ -21,7 +21,7 @@ class Entry(Base):
 class Tag(Base):
     __tablename__ = "tags"
     id = Column(Integer, primary_key=True)
-    name = Column(String, index=True)
+    name = Column(String, index=True, unique=True)
     events = relationship("Event", secondary="tag_table", back_populates="tags")
 
 tag_table = Table(
