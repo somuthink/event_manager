@@ -13,7 +13,14 @@ class Access_news_schema(BaseModel):
     news_id: int
 
 
+class Access_by_tag_schema(BaseModel):
+    user_id: int
+    tag_id: int
+    access_level_to_events: int
+    access_level_to_news: int
+
 class Tag(BaseModel):
+    id: int
     name: str
 
 
@@ -85,13 +92,14 @@ class UserBase(BaseModel):
     birthday: date | None = None
 
 class User(UserBase):
-    is_organizer: bool | None = None
+    is_organizer: bool | None
     UserAccess: int | None
     EventAccess: int | None
     NewsAccess: int | None
     CreateAccess: list[int] | None
     local_event_access: list[Access_event_schema] | None
     local_news_access: list[Access_news_schema] | None
+    access_by_tag: list[Access_by_tag_schema] | None
     tamplates: list[dict] | None
 
 class UpdateUser(UserBase):
@@ -162,4 +170,4 @@ class AccessSchema(BaseModel):
 class RightSchema(BaseModel):
     access: int
     model: int
-
+    second_access: int

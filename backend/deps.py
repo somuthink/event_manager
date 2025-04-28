@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from functools import wraps
 from . import schemas
 from . import security
+from . import crud
 # from . import models
 # from enum import Enum
 from sqlalchemy import Enum
@@ -62,10 +63,15 @@ def check(rights: list[Right]):
                         if right.model != Model.USER and entity_ids[right.model] in [local_access.__dict__.get(atrs[right.model]) for local_access in user_rights[right.model] if local_access.level >= right.access]:
                             return handler(*args, **kwargs)
                     else:
+                        user_rights_by_tags = user.access_by_tag
+                        atrs = [None, 'access_level_to_events', 'access_level_to_news']
+                        entities = [None, crud.get_event, crud.get_news]
+                        for right in rights:
+                            if right.model != Model.USER and [access_by_tag for access_by_tag in user_rights_by_tags if (access_by_tag.__dict__.get(atrs[right.model]) >= right.access and access_by_tag in entities[right.model](kwargs.get('db'), entity_ids[right.model]).tags if right.model == 1 else sum(list(map(lambda x: x.tags, entities[right.model](kwargs.get('db'), entity_ids[right.model]).events)), []))]:
+                                return handler(*args, **kwargs)
                         raise HTTPException(status_code=405)
         return wrapper
     return decorator
-
 
 def owner_or_check(rights: list[Right]):
     def decorator(handler):

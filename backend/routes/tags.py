@@ -25,7 +25,7 @@ def read_tags(db: Session = Depends(get_db)):
     return crud.get_tags(db)
 
 
-@router.delete("/")
+@router.delete("/", response_model=schemas.Tag)
 @check([])
 def delete_tag(user: UserDep, name: str, db: Session = Depends(get_db)):
     db_tag = crud.get_tag(db, name)

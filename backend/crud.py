@@ -205,6 +205,26 @@ def delete_access_news_association(db: Session, user_id: int, news_id: int):
 
 
 
+def get_access_tag_association(db: Session, user_id: int, tag_id: int):
+    return db.query(models.Access_news).filter(models.Access_by_tag.user_id == user_id).filter(models.Access_by_tag.tag_id == tag_id).first()
+
+
+def create_access_tag_association(db: Session, user_id: int, tag_id: int, access_level_to_events: int, access_level_to_news: int):
+    db_association = models.Access_by_tag(user = get_user(db, user_id), tag = get_tag(db, tag_id), access_level_to_events = access_level_to_events, access_level_to_news = access_level_to_news)
+    db.add(db_association)
+    db.commit()
+    db.refresh(db_association)
+    return db_association
+
+
+def delete_access_tag_association(db: Session, user_id: int, tag_id: int):
+    db_association = get_access_tag_association(db, user_id, tag_id)
+    db.delete(db_association)
+    db.commit()
+    return db_association
+
+
+
 
 def create_entry(db: Session, entry: schemas.EntryCreate):
     db_entry = models.Entry(**entry.model_dump())
@@ -233,8 +253,14 @@ def delete_entry(db: Session, entry_id: int):
     return db_entry
 
 
+@dispatch(Session, str)
 def get_tag(db: Session, name: str):
     return db.query(models.Tag).filter(models.Tag.name == name).first()
+
+
+@dispatch(Session, int)
+def get_tag(db: Session, tag_id):
+    return db.query(models.Tag).filter(models.Tag.id == tag_id).first()
 
 
 def get_tags(db: Session):
