@@ -12,5 +12,3 @@ app = FastAPI()
 
 for route in [events, users, security, news, relationships, timepad, files, tags]:
     app.include_router(route.router)
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
