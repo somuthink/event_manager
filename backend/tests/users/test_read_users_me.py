@@ -1,9 +1,27 @@
 from ..deps import *
 
+
+def setup_module(module):
+    db = SessionLocal()
+    user = crud.get_user_by_username(db, 'some_username')
+    if user:
+        crud.delete_user(db, user.id)
+    db.close()
+
+
+def teardown_function(function):
+    db = SessionLocal()
+    user = crud.get_user_by_username(db, 'some_username')
+    if user:
+        crud.delete_user(db, user.id)
+    db.close()
+
+
+
+
 def test_read_super_user():
     response = client.get("/users/me/", headers=auth("super_user", "1"))
     assert response.status_code == 200
-
 
 
 def test_read_myself():
@@ -44,9 +62,6 @@ def test_read_myself():
   "access_by_tag": [],
   "tamplates": None
 }
-    response = client.delete(f"/users/{id2}", headers=auth("super_user", "1"))
-    assert response.status_code == 200
-
 
 def test_incorrect_username_or_password():
     response = client.get("users/me/", headers=auth('some_username', 'some_password'))

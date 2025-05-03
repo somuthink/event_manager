@@ -2,6 +2,7 @@ from functools import wraps
 from ..main import app
 from fastapi.testclient import TestClient
 from multipledispatch import dispatch
+from .. import crud
 from ..deps import *
 
 client = TestClient(app)
@@ -20,10 +21,10 @@ def auth(username: str, password: str):
     token = client.post("/token", data={"grant_type": "password", "username": username, "password": password})
     return {"Authorization": f"Bearer {token.json().get('access_token')}"}
 
-def db(f):
-    @wraps
-    def wrapper():
-        db = SessionLocal()
-        f(db)
-        db.close()
-    return wrapper
+# def db(f):
+#     @wraps
+#     def wrapper():
+#         db = SessionLocal()
+#         f(db)
+#         db.close()
+#     return wrapper
