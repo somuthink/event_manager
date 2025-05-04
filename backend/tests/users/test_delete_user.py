@@ -36,7 +36,7 @@ def test_as_organizer():
   "password": "some_password"
     }).json().get("id")
     assert id1
-    r2 = client.get(f'/users/{id1}', headers=auth('super_user', '1'))
+    r2 = client.delete(f'/users/{id1}', headers=auth('super_user', '1'))
     assert r2.status_code == 200
     assert r2.json() == {
   "username": "some_username",
@@ -71,7 +71,7 @@ def test_as_owner():
   "birthday": "2025-05-02",
   "password": "some_password"
     }).json().get('id')
-    r2 = client.get(f'/users/{id1}', headers=auth('some_username', 'some_password'))
+    r2 = client.delete(f'/users/{id1}', headers=auth('some_username', 'some_password'))
     assert r2.status_code == 200
     assert r2.json() == {
   "username": "some_username",
@@ -117,7 +117,7 @@ def test_as_another_user():
   "birthday": "2025-05-02",
   "password": "some_password"
     }).json().get('id')
-    r2 = client.get(f'/users/{id1}', headers=auth('another_username', 'another_password'))
+    r2 = client.delete(f'/users/{id1}', headers=auth('another_username', 'another_password'))
     assert r2.status_code == 405
     assert r2.json() == {
   "detail": "Method Not Allowed"
@@ -156,26 +156,10 @@ def test_access_read_user():
   "CreateAccess": []
 })
     assert r3.status_code == 200
-    r4 = client.get(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
-    assert r4.status_code == 200
+    r4 = client.delete(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
+    assert r4.status_code == 405
     assert r4.json() == {
-  "username": "some_username",
-  "email": "some_email",
-  "number": 666,
-  "name": "some_name",
-  "surname": "some_surname",
-  "patronymic": "some_patronymic",
-  "is_active": True,
-  "birthday": "2025-05-02",
-  "is_organizer": False,
-  "UserAccess": -1,
-  "EventAccess": 1,
-  "NewsAccess": 1,
-  "CreateAccess": [],
-  "local_event_access": [],
-  "local_news_access": [],
-  "access_by_tag": [],
-  "tamplates": None
+  "detail": "Method Not Allowed"
 }
 
 
@@ -212,26 +196,10 @@ def test_access_update_user():
   "CreateAccess": []
 })
     assert r3.status_code == 200
-    r4 = client.get(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
-    assert r4.status_code == 200
+    r4 = client.delete(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
+    assert r4.status_code == 405
     assert r4.json() == {
-  "username": "some_username",
-  "email": "some_email",
-  "number": 666,
-  "name": "some_name",
-  "surname": "some_surname",
-  "patronymic": "some_patronymic",
-  "is_active": True,
-  "birthday": "2025-05-02",
-  "is_organizer": False,
-  "UserAccess": -1,
-  "EventAccess": 1,
-  "NewsAccess": 1,
-  "CreateAccess": [],
-  "local_event_access": [],
-  "local_news_access": [],
-  "access_by_tag": [],
-  "tamplates": None
+  "detail": "Method Not Allowed"
 }
 
 
@@ -267,7 +235,7 @@ def test_access_delete_user():
   "CreateAccess": []
 })
     assert r3.status_code == 200
-    r4 = client.get(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
+    r4 = client.delete(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
     assert r4.status_code == 200
     assert r4.json() == {
   "username": "some_username",

@@ -33,7 +33,7 @@ def read_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.put("/{user_id}")
+@router.put("/{user_id}", response_model=schemas.User)
 @owner_or_check([Right(Access.UPDATE, Model.USER)])
 def update_user(user: UserDep, 
     user_id: int, updated_user: schemas.UpdateUser, db: Session = Depends(get_db)
@@ -41,16 +41,16 @@ def update_user(user: UserDep,
     db_user = crud.update_user(db, user_id, updated_user)
     if db_user is None:
         raise HTTPException(404, "Could not update")
-    return {"message": "User record successfully Updated", "data": db_user}
+    return db_user
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", response_model=schemas.User)
 @owner_or_check([Right(Access.DELETE, Model.USER)])
 def delete_user(user: UserDep, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.delete_user(db, user_id)
     if db_user is None:
         raise HTTPException(404, "User Not Found")
-    return {"message": "User successfully Deleted", "data": db_user}
+    return db_user
 
 
 @router.get("/me/", response_model=schemas.UserInDB)
@@ -60,14 +60,14 @@ async def read_users_me(
     return current_user
 
 
-@router.put("/give-global-access/{user_id}")
+@router.put("/give-global-access/{user_id}", response_model=schemas.User)
 @check([])
 def give_global_access(user: UserDep, global_access: schemas.AccessSchema, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.update_user(db, user_id, global_access)
     if db_user is None:
         raise HTTPException(404, "Could not update")
     
-    return {"message": "User successfully Deleted", "data": db_user}
+    return db_user
 
 
 @router.post("/give-local-access/{user_id}")
@@ -78,7 +78,7 @@ def give_local_access(user: UserDep, local_access: schemas.RightSchema, user_id:
     if crud.get_user(db, user_id) is None or actions[local_access.model][0](db, entity_id) is None:
         raise HTTPException(status_code=404, detail=f"{['', 'Event', 'News'][local_access.model]} or User Not Found")
     elif actions[local_access.model][1](db, user_id, entity_id):
-        raise HTTPException(status_code=400, detail="Access already exist")
+        raise HTTPException(status_code=400, detail="Access already exists")
     else:
         return actions[local_access.model][2](db, user_id, entity_id, local_access.access) if local_access.model < 3 else actions[local_access.model][2](db, user_id, entity_id, local_access.access, local_access.second_access)
 
