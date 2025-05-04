@@ -25,7 +25,8 @@ def setup_function(function):
 def teardown_function(function):
     db = SessionLocal()
     user = crud.get_user_by_username(db, 'some_username')
-    crud.delete_user(db, user.id)
+    if user:
+        crud.delete_user(db, user.id)
     db.close()
 
 
@@ -53,7 +54,7 @@ def test_not_organizer():
     assert response2.json() == {
   "detail": "Method Not Allowed"
 }
-    
+
 
 def test_access_read_user():
     r1 = client.get('/users/me/', headers=auth('some_username', 'some_password'))
@@ -122,3 +123,11 @@ def test_access_delete_user():
         skip += limit
         r3 = client.get(f"/users/?skip={skip}&limit={limit}", headers=auth('some_username', 'some_password'))
     assert res
+
+
+def test_without_headers():
+    response = client.get("/users?skip=0&limit=100")
+    assert response.status_code == 401
+    assert response.json() == {
+  "detail": "Not authenticated"
+}
