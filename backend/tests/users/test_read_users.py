@@ -50,10 +50,8 @@ def test_not_organizer():
     limit = 100
     skip = 0
     response2 = client.get(f"/users/?skip={skip}&limit={limit}", headers=auth('some_username', 'some_password'))
-    assert response2.status_code == 405
-    assert response2.json() == {
-  "detail": "Method Not Allowed"
-}
+    assert response2.status_code == 403
+    assert response2.json() == {'detail': 'Forbidden'}
 
 
 def test_access_read_user():

@@ -58,7 +58,7 @@ def test_as_organizer():
   "local_event_access": [],
   "local_news_access": [],
   "access_by_tag": [],
-  "tamplates": None
+  "templates": None
 }
 
 
@@ -93,7 +93,7 @@ def test_as_owner():
   "local_event_access": [],
   "local_news_access": [],
   "access_by_tag": [],
-  "tamplates": None
+  "templates": None
 }
 
 
@@ -121,10 +121,8 @@ def test_as_another_user():
   "password": "some_password"
     }).json().get('id')
     r2 = client.delete(f'/users/{id1}', headers=auth('another_username', 'another_password'))
-    assert r2.status_code == 405
-    assert r2.json() == {
-  "detail": "Method Not Allowed"
-}
+    assert r2.status_code == 403
+    assert r2.json() == {'detail': 'Forbidden'}
 
 
 def test_access_read_user():
@@ -160,10 +158,8 @@ def test_access_read_user():
 })
     assert r3.status_code == 200
     r4 = client.delete(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
-    assert r4.status_code == 405
-    assert r4.json() == {
-  "detail": "Method Not Allowed"
-}
+    assert r4.status_code == 403
+    assert r4.json() == {'detail': 'Forbidden'}
 
 
 
@@ -200,10 +196,8 @@ def test_access_update_user():
 })
     assert r3.status_code == 200
     r4 = client.delete(f"/users/{r1.json().get('id')}", headers=auth('another_username', 'another_password'))
-    assert r4.status_code == 405
-    assert r4.json() == {
-  "detail": "Method Not Allowed"
-}
+    assert r4.status_code == 403
+    assert r4.json() == {'detail': 'Forbidden'}
 
 
 def test_access_delete_user():
@@ -257,7 +251,7 @@ def test_access_delete_user():
   "local_event_access": [],
   "local_news_access": [],
   "access_by_tag": [],
-  "tamplates": None
+  "templates": None
 }
 
 

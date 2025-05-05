@@ -69,7 +69,7 @@ def check(rights: list[Right]):
                         for right in rights:
                             if right.model != Model.USER and [access_by_tag for access_by_tag in user_rights_by_tags if (access_by_tag.__dict__.get(atrs[right.model]) >= right.access and access_by_tag in entities[right.model](kwargs.get('db'), entity_ids[right.model]).tags if right.model == 1 else sum(list(map(lambda x: x.tags, entities[right.model](kwargs.get('db'), entity_ids[right.model]).events)), []))]:
                                 return handler(*args, **kwargs)
-                        raise HTTPException(status_code=405)
+                        raise HTTPException(status_code=403)
         return wrapper
     return decorator
 

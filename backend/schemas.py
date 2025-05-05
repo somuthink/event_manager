@@ -100,7 +100,7 @@ class User(UserBase):
     local_event_access: list[Access_event_schema] | None
     local_news_access: list[Access_news_schema] | None
     access_by_tag: list[Access_by_tag_schema] | None
-    tamplates: list[dict] | None
+    templates: list[dict] | None
 
 class UpdateUser(UserBase):
     pass

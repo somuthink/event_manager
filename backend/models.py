@@ -96,7 +96,7 @@ class User(Base):
     local_event_access = relationship("Access_event", back_populates="user")
     local_news_access = relationship("Access_news", back_populates="user")
     access_by_tag = relationship("Access_by_tag", back_populates="user")
-    tamplates = Column(ARRAY(JSONB))
+    templates = Column(ARRAY(JSONB))
 
 
 class Event(Base):

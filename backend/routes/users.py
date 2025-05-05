@@ -13,6 +13,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, user.username)
     if db_user:
         raise HTTPException(status_code=404, detail="Username already exists")
+    elif not user.password:
+        raise HTTPException(status_code=404, detail="Password should be not empty")
+    elif not user.username:
+        raise HTTPException(status_code=404, detail="Username should be not empty")
     else:
         return crud.create_user(db, user)
 
@@ -96,3 +100,15 @@ def delete_local_access(user: UserDep, model: int, user_id: int, entity_id: int,
         raise HTTPException(status_code=400, detail="Relation doesnt exist")
     else:
         return actions[model][2](db, user_id, entity_id)
+
+
+@router.get("/templates")
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.NEWS)])
+def read_templates(user: UserDep):
+    return user.templates
+
+
+@router.put("/templates", response_model=schemas.User)
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.NEWS)])
+def update_templates(user: UserDep, templates: list[dict], db: Session = Depends(get_db)):
+    return crud.update_user(db, user.id, schemas.User(templates=templates))

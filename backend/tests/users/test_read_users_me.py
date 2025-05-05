@@ -60,7 +60,7 @@ def test_read_myself():
   "local_event_access": [],
   "local_news_access": [],
   "access_by_tag": [],
-  "tamplates": None
+  "templates": None
 }
 
 def test_incorrect_username_or_password():

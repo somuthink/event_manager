@@ -7,7 +7,7 @@ def setup_module(module):
         crud.delete_user(db, user.id)
     db.close()
 
-def teardown():
+def teardown_function(function):
     db = SessionLocal()
     user = crud.get_user_by_username(db, 'some_username')
     if user:
@@ -50,7 +50,7 @@ def test_create_user():
   "local_event_access": [],
   "local_news_access": [],
   "access_by_tag": [],
-  "tamplates": None
+  "templates": None
   }
     assert client.get(f"/users/{id}", headers=auth("some_username", "some_password")).status_code == 200
 
@@ -81,4 +81,40 @@ def test_create_existed_user():
     assert response.status_code == 404
     assert response.json() == {
   "detail": "Username already exists"
+}
+
+
+def test_empty_password():
+    response = client.post("/users", json = {
+  "username": "some_username",
+  "email": "some_email",
+  "number": 666,
+  "name": "some_name",
+  "surname": "some_surname",
+  "patronymic": "some_patronymic",
+  "is_active": True,
+  "birthday": "2025-05-02",
+  "password": ""
+    })
+    assert response.status_code == 404
+    assert response.json() == {
+  "detail": "Password should be not empty"
+}
+
+
+def test_empty_username():
+    response = client.post("/users", json = {
+  "username": "",
+  "email": "some_email",
+  "number": 666,
+  "name": "some_name",
+  "surname": "some_surname",
+  "patronymic": "some_patronymic",
+  "is_active": True,
+  "birthday": "2025-05-02",
+  "password": "some_password"
+    })
+    assert response.status_code == 404
+    assert response.json() == {
+  "detail": "Username should be not empty"
 }
