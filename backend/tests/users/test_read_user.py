@@ -6,6 +6,9 @@ def setup_module(module):
     user = crud.get_user_by_username(db, 'some_username')
     if user:
         crud.delete_user(db, user.id)
+    user = crud.get_user_by_username(db, 'another_username')
+    if user:
+        crud.delete_user(db, user.id)
     db.close()
 
 
