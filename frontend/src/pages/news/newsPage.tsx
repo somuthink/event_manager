@@ -1,8 +1,8 @@
+import { axiosInst } from "@/api/axios";
 import { EventCard } from "@/components/card/eventCard";
 import { SearchBar } from "@/components/input/searchbar";
-import { axiosInst } from "@/api/axios";
 import { Event } from "@/interfaces/interfaces";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const NewsPage = () => {
 
@@ -18,6 +18,7 @@ export const NewsPage = () => {
 
     const fetchEvents = useCallback(async () => {
         if (!hasMore || isLoading) return;
+
 
         setIsLoading(true);
         try {
@@ -69,18 +70,18 @@ export const NewsPage = () => {
 
     return (
         <div className="flex flex-col gap-5 w-full">
-            <SearchBar typo="news" />
+          <SearchBar typo="news" />
             <div className="w-full grid lg:grid-cols-3 gap-5 grid-cols-2">
                 {events.map((event, index) => (
                     <EventCard key={index} event={event} />
                 ))}
+                {!hasMore && (
+                    <div className="w-full flex flex-col items-center justify-center gap-2 font-mono">
+                        end
+                    </div>
+                )}
+                <div ref={observerTarget}></div>
             </div>
-            {!hasMore && (
-                <div className="w-full flex flex-col items-center justify-center gap-2 font-mono">
-                    end
-                </div>
-            )}
-            <div ref={observerTarget}></div>
         </div>
     );
 };

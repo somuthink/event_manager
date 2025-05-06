@@ -21,7 +21,7 @@ export const base = {
             }
         ]
     },
-    "aef14c42-a8ed-4c28-a1a4-3d6607d9e615": {
+    "description": {
         "id": "aef14c42-a8ed-4c28-a1a4-3d6607d9e615",
         "type": "Blockquote",
         "meta": {
@@ -30,7 +30,7 @@ export const base = {
         },
         "value": [
             {
-                "id": "dbefc99d-15f9-40fa-8edb-86549015c8c9",
+                "id": "descvalue",
                 "type": "blockquote",
                 "children": [
                     {

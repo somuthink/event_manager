@@ -37,7 +37,8 @@ export function DatePickerWithRange({
                             !date && "text-muted-foreground"
                         )}
                     >
-                        <CalendarIcon />
+                        <CalendarIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      <div className="w-full text-center">
                         {date?.from ? (
                             date.to ? (
                                 <>
@@ -50,6 +51,7 @@ export function DatePickerWithRange({
                         ) : (
                             <span>Даты проведения</span>
                         )}
+                      </div>
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

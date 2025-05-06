@@ -21,27 +21,19 @@ export const EventsPage = () => {
 
         setIsLoading(true);
         try {
-            // const response = await axiosInst.get<Event[]>(
-            //     `events/?skip=${offset}&limit=${PAGE_SIZE}`
-            // );
-            // 
-            // const newEvents = response.data;
+            const response = await axiosInst.get<Event[]>(
+                `events/?skip=${offset}&limit=${PAGE_SIZE}`
+            );
 
-            const placeholderEvents: Event[] = Array.from({ length: PAGE_SIZE }, (_, i) => ({
-                id: offset + i,
-                title: `Это демо-событие ${offset + i + 1}`,
-                description: "Это плейсхолдер описания будущего события.",
-                imageUrl: "https://via.placeholder.com/300x200",
-                date: new Date().toISOString(),
-                theme: "",
-                location: "Demo City",
+            const newEvents = response.data.map(event => ({
+                ...event,
+                start_time: new Date(event.start_time),
+                end_time: new Date(event.end_time),
             }));
 
-            await new Promise((res) => setTimeout(res, 500));
+            setEvents((prevEvents) => [...prevEvents, ...newEvents]);
 
-            setEvents((prevEvents) => [...prevEvents, ...placeholderEvents]);
-
-            if (placeholderEvents.length < PAGE_SIZE) {
+            if (newEvents.length < PAGE_SIZE) {
                 setHasMore(false);
             } else {
                 setOffset((prevOffset) => prevOffset + PAGE_SIZE);
@@ -90,7 +82,7 @@ export const EventsPage = () => {
             </div>
             {!hasMore && (
                 <div className="w-full flex flex-col items-center justify-center gap-2 font-mono">
-                    end
+                    🔚
                 </div>
             )}
             <div ref={observerTarget}></div>

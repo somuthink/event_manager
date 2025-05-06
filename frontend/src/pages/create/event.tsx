@@ -1,23 +1,35 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { DatePickerWithRange } from "@/components/input/dateRangePicker"
 import { DateRange } from "react-day-picker"
 import { addDays } from "date-fns"
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton"
 import { YandexMap } from "@/components/ymap/map";
 import { YooptaCn } from "@/components/editor/yopta";
 import { Input } from "@/components/ui/input";
 import { MultiComboBox } from "@/components/input/combo";
-import { Combo, Event } from "@/interfaces/interfaces"
+import { Combo, Event, Tag } from "@/interfaces/interfaces"
 import { CreateGroup } from "@/components/editor/group";
 import { EventCard } from "@/components/card/eventCard";
 import { axiosInst } from "@/api/axios";
+import { UploadFile } from "@/api/upload";
 
 import placeholder from "@/assets/placeholder.png"
 
 
 export const CreateEventPage = () => {
     const navigate = useNavigate();
+
+    const location = useLocation();
+    const template = (location.state as { template: any })?.template;
+
+
+    const [value, setValue] = useState(template);
+
+    const [tags, setTags] = useState<Tag[]>([])
+
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -27,15 +39,11 @@ export const CreateEventPage = () => {
         to: addDays(new Date(), 2),
     })
 
-    const orgs: Combo[] = [
-        { value: 'Константин Мелекесов', label: 'Константин Мелекесов' },
-    ];
 
-
-    const tags: Combo[] = [
-        { value: 'ДМ', label: 'Дворец Молодежи' },
-        { value: 'IT куб', label: 'IT куб' },
-    ];
+    // const tags: Combo[] = [
+    //     { value: 'ДМ', label: 'Дворец Молодежи' },
+    //     { value: 'IT куб', label: 'IT куб' },
+    // ];
 
     const [bannerPreview, setBannerPreview] = useState<string>("")
 
@@ -45,6 +53,11 @@ export const CreateEventPage = () => {
         description: '',
         theme: '',
         image: '',
+        start_time: new Date(),
+        end_time: addDays(new Date(), 2),
+        address: "",
+        tags: [{ name: "string" }],
+        structure: value,
     });
 
 
@@ -57,21 +70,14 @@ export const CreateEventPage = () => {
         }
 
         try {
-            const formData = new FormData();
-            formData.append("files", file);
-
-            axiosInst.post("/files/", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-
+            UploadFile(file)
         } catch (error) {
             console.error("Error uploading file:", error);
             return;
         }
 
         setEventData((prev) => ({ ...prev, image: file.name }));
+        setBannerPreview("")
 
 
     };
@@ -88,21 +94,69 @@ export const CreateEventPage = () => {
         }
     };
 
+    const SaveEvent = () => {
 
+        axiosInst.post("/events/", eventData)
+        navigate("/events")
+
+
+    }
+
+    useEffect(() => {
+      setEventData((prev) => ({ ...prev, title: value.title.value[0].children[0].text, description: value.description.value[0].children[0].text , structure: value}));
+    }
+        , [value]
+    )
+
+    useEffect(() => {
+        if (date?.from && date?.to) {
+            setEventData((prev) => ({
+                ...prev,
+                start_time: date.from,
+                end_time: date.to,
+            }));
+        }
+    }, [date]);
+
+    useEffect(() => {
+        setEventData((prev) => ({
+            ...prev,
+            tags: selectedTags
+        }));
+    }, [selectedTags])
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await axiosInst.get<Tag[]>("tags/")
+                setTags(response.data)
+            } catch (error) {
+                console.error("Failed to fetch tags:", error)
+            } finally {
+            }
+        }
+
+        fetchTags()
+    }, [])
 
 
     return (
-        <div className="flex flex-col h-full w-4/5 items-center    gap-5 ">
+        <div className="flex flex-col  w-4/5 items-center    gap-5  ">
 
 
             <CreateGroup name="мета-данные">
 
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-4 w-full">
 
 
-                    <DatePickerWithRange date={date} setDate={setDate} className="" />
-                    <Input placeholder="Адрес проведения" className="flex" />
-                    <MultiComboBox data={tags} placeholder="Теги" description="Выберите из списка" />
+                    <DatePickerWithRange date={date} setDate={setDate} className="w-full" />
+                    <Input placeholder="Адрес проведения" className="w-full" onBlur={(e) => {
+                        setEventData((prev) => ({
+                            ...prev,
+                            address: e.target.value
+                        }));
+                    }} />
+                    <MultiComboBox data={tags} values={selectedTags} setValues={setSelectedTags} placeholder="Теги" description="Выберите из списка" />
 
                 </div>
 
@@ -131,14 +185,20 @@ export const CreateEventPage = () => {
                         <Button onClick={handleUpload} variant="secondary">Сохранить</Button>
                     </div>
                     <div className="flex-[4] flex flex-row gap-3 items-center w-full ">
-                        <div className="w-full flex flex-row gap-1">
-                            <img src={bannerPreview !== "" ? bannerPreview : placeholder} className="h-32 aspect-square rounded-lg" />
-                            <img src={bannerPreview !== "" ? bannerPreview : placeholder} className="h-32 aspect-video rounded-lg" />
-                        </div>
+                        {bannerPreview === "" ?
+                            <div className="w-full flex flex-row gap-1">
+                                <Skeleton className="h-32 aspect-square rounded-lg" />
+                                <Skeleton className="h-32 aspect-video rounded-lg" /> </div> :
+
+                            <div className="w-full flex flex-row gap-1">
+                                <img src={bannerPreview} className="h-32 aspect-square rounded-lg" />
+                                <img src={bannerPreview} className="h-32 aspect-video rounded-lg" />
+                            </div>
+                        }
                         <a className="w-full text-accent-foreground/70 opacity-0 lg:opacity-100 ">в качествей баннера лучше используйте фото, изображения без текста</a>
                     </div>
                 </div>
-            </CreateGroup>
+            </CreateGroup >
 
             <CreateGroup name="предпросмотр карточки" >
                 <div className="w-2/3 p-4   ">
@@ -149,13 +209,13 @@ export const CreateEventPage = () => {
             </CreateGroup>
 
             <CreateGroup name="редактор страницы мерорприятия">
-                <YooptaCn />
+                <YooptaCn value={value} setValue={setValue} />
             </CreateGroup>
 
 
 
 
-            <Button onClick={() => { navigate("/") }}>Создать</Button>
-        </div>
+            <Button onClick={SaveEvent}>Создать</Button>
+        </div >
     );
 }

@@ -15,7 +15,7 @@ import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-lis
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
 import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {  useMemo, useRef } from 'react';
 import { TypographyP } from '@/components/libraries/shadcn/TypographyP';
 import { TypographyH1 } from '@/components/libraries/shadcn/TypographyH1';
 import { TypographyH2 } from '@/components/libraries/shadcn/TypographyH2';
@@ -24,15 +24,13 @@ import { TypographyBlockquote } from '@/components/libraries/shadcn/TypographyBl
 import { TypographyLink } from '@/components/libraries/shadcn/TypographyLink';
 
 
-
 import {
     AccordionList,
     AccordionListItem,
     AccordionListItemContent,
     AccordionListItemHeading,
 } from '@/components/libraries/shadcn/Accordion';
-import { Slate } from 'slate-react';
-import { base } from '@/assets/templates/base';
+import { UploadFile } from '@/api/upload';
 
 const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Record<string, unknown>>[] => [
     Paragraph.extend({
@@ -87,8 +85,9 @@ const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Recor
     Image.extend({
         options: {
             async onUpload(file) {
+              UploadFile(file) 
                 return {
-                    src: "",
+                  src: `/api/files/?filename=${file.name}`,
                     alt: 'not implemented yet',
                     sizes: {
                         width: 500,
@@ -101,8 +100,9 @@ const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Recor
     Video.extend({
         options: {
             onUpload: async (file) => {
+              UploadFile(file)
                 return {
-                    src: "",
+                  src: `/api/files/?filename=${file.name}`,
                     alt: 'not implemented yet',
                     sizes: {
                         width: 500,
@@ -117,8 +117,16 @@ const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Recor
     }),
     File.extend({
         options: {
-            onUpload: async (file) => {
-                return { src: "", format: "", name: "", size: "" };
+            async onUpload(file) {
+              UploadFile(file) 
+                return {
+                  src: `/api/files/?filename=${file.name}`,
+                    alt: 'not implemented yet',
+                    sizes: {
+                        width: 500,
+                        height: 500,
+                    },
+                };
             },
         },
     }),
@@ -145,11 +153,16 @@ const TOOLS = {
 
 const MARKS = [Bold, Italic, Underline, Strike, Highlight];
 
-export const YooptaCn = () => {
+
+interface YooptaCnProps {
+    value: object
+    setValue: React.Dispatch<React.SetStateAction<object>>
+}
+
+export const YooptaCn = ({value, setValue} : YooptaCnProps) => {
     const editor = useMemo(() => createYooptaEditor(), []);
     const selectionRef = useRef(null);
 
-    const [value, setValue] = useState<YooptaContentValue>();
 
     const onChange = (value: YooptaContentValue, options: YooptaOnChangeOptions) => {
         setValue(value);
@@ -158,15 +171,13 @@ export const YooptaCn = () => {
 
     const plugins = useMemo(() => getPlugins(), []);
 
-    useEffect
-
     return (
         <div
-            className=" flex justify-center w-full"
+            className="mt-4 mx-1 flex justify-center w-full"
             ref={selectionRef}
         >
             <YooptaEditor
-                value={base}
+                value={value as YooptaContentValue}
                 width={"100%"}
                 editor={editor}
                 plugins={plugins}
@@ -179,5 +190,32 @@ export const YooptaCn = () => {
             />
         </div>
     );
+}
+
+
+export const ReadOnlyYoopta = ({value, className} : {value : Object, className : string}) => {
+  const editor = useMemo(() => createYooptaEditor(), []);
+  const selectionRef = useRef(null);
+
+
+  const plugins = useMemo(() => getPlugins(), []);
+
+  return (
+    <div
+      className={className}
+      ref={selectionRef}
+    >
+      <YooptaEditor
+        editor={editor}
+        plugins={plugins}
+        tools={TOOLS}
+        marks={MARKS}
+        selectionBoxRoot={selectionRef}
+        value={value as YooptaContentValue}
+        autoFocus
+        readOnly
+      />
+    </div>
+  );
 }
 

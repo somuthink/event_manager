@@ -1,17 +1,22 @@
 import { Search, Clock, UsersRound, Plus } from "lucide-react";
 import { OrgOnly } from "../auth/roleRendering";
 import { Button } from "../ui/button";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { TemplateChoose } from "../editor/templates";
 
 
-const CreateBtn = (typo: { typo: "event" | "news" }) => {
-    const navigate = useNavigate()
+const CreateBtn = ({typo}: { typo: "event" | "news" }) => {
+
+  const [openCommand, setOpenCommand] = useState<boolean>(false)
+
 
     return (
         <OrgOnly>
-            <Button className="h-full  bg-primary-foreground shadow-none" variant="outline" onClick={() => { navigate(`/create/${typo.typo}`) }}>
+          <Button className="h-full  bg-primary-foreground shadow-none" variant="outline" onClick={() => { setOpenCommand(true) }}>
                 <Plus strokeWidth={1} size={20} />
-            </Button></OrgOnly>
+            </Button>
+          <TemplateChoose typo={typo} openCommand={openCommand} setOpenCommand={setOpenCommand}/>
+        </OrgOnly>
     );
 }
 
