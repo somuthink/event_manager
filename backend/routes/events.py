@@ -1,8 +1,7 @@
-from fastapi import Depends, HTTPException, Request
-from sqlalchemy.orm import Session
+from fastapi import Depends, Form, HTTPException, Request
 from fastapi.routing import APIRouter
 from fastapi.templating import Jinja2Templates
-from fastapi import Form
+from sqlalchemy.orm import Session
 
 from .. import crud, schemas
 from ..deps import *
@@ -22,8 +21,8 @@ def create_event(user: UserDep, event: schemas.EventCreate, db: Session = Depend
 
 
 @router.get("/", response_model=list[schemas.EventRead])
-def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    events = crud.get_events(db, skip, limit)
+def read_events(q: str | None = None , skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    events = crud.get_events(db, q, skip, limit, )
     return events
 
 

@@ -1,10 +1,12 @@
 import os
-from fastapi import UploadFile
-from sqlalchemy.orm import Session
-from . import models, schemas
-from passlib.context import CryptContext
+from typing import Optional
+from sqlalchemy import or_, case
+from fastapi import Query, UploadFile
 from multipledispatch import dispatch
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
+from . import models, schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -36,8 +38,8 @@ def update_user(db: Session, user_id: int, updated_user: schemas.User):
     if user_to_update:
         for key, value in updated_user.model_dump(exclude_unset=True).items():
             setattr(user_to_update, key, value)
-        db.commit()
-        db.refresh(user_to_update)
+            db.commit()
+            db.refresh(user_to_update)
         return user_to_update
     else:
         return None
@@ -56,9 +58,27 @@ def delete_user(db: Session, user_id: int):
 def get_event(db: Session, event_id: int):
     return db.query(models.Event).filter(models.Event.id == event_id).first()
 
+def get_events(
+        db: Session,
+        q: str | None = None,
+        skip: int = 0,
+        limit: int = 100,
+):
+    query = db.query(models.Event)
 
-def get_events(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Event).offset(skip).limit(limit).all()
+    if q:
+        title_match = models.Event.title.ilike(f"%{q}%")
+        desc_match = models.Event.description.ilike(f"%{q}%")
+
+        query = query.filter(or_(title_match, desc_match)).order_by(
+            case(
+                    (title_match, 0),  
+                    (desc_match, 1),  
+                    else_=2
+            )
+        )
+
+    return query.offset(skip).limit(limit).all()
 
 
 def get_event_by_title(db: Session, title: str):
@@ -84,8 +104,8 @@ def update_event(db: Session, event_id: int, updated_event: schemas.EventBase):
         event_to_update.tags = [get_tag(db, tag.name) for tag in updated_event.tags]
         for key, value in data.items():
             setattr(event_to_update, key, value)
-        db.commit()
-        db.refresh(event_to_update)
+            db.commit()
+            db.refresh(event_to_update)
         return event_to_update
     else:
         return None
@@ -127,8 +147,8 @@ def update_news(db: Session, news_id: int, updated_news: schemas.NewsBase):
     if news_to_update:
         for key, value in updated_news.model_dump(exclude_unset=True).items():
             setattr(news_to_update, key, value)
-        db.commit()
-        db.refresh(news_to_update)
+            db.commit()
+            db.refresh(news_to_update)
         return news_to_update
     else:
         return None
@@ -268,11 +288,11 @@ def get_tags(db: Session):
 
 
 def create_tag(db: Session, name: str):
-        db_tag = models.Tag(name = name)
-        db.add(db_tag)
-        db.commit()
-        db.refresh(db_tag)
-        return db_tag
+    db_tag = models.Tag(name = name)
+    db.add(db_tag)
+    db.commit()
+    db.refresh(db_tag)
+    return db_tag
 
 
 def delete_tag(db: Session, name: str):
@@ -286,8 +306,8 @@ def create_images(files: list[UploadFile] | None = None):
     dir_path = f"files/"
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
-    saved_files = []
-    
+        saved_files = []
+        
     # Сохраняем каждый файл
     for i, file_data in enumerate(files, 1):
         try:
@@ -298,7 +318,7 @@ def create_images(files: list[UploadFile] | None = None):
             # Сохраняем файл на диск
             with open(file_path, "wb") as buffer:
                 buffer.write(file_data.file.read())
-            
+                
             saved_files.append(file_path)
             
         except Exception as e:
