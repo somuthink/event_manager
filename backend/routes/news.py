@@ -21,8 +21,8 @@ def create_news(user: UserDep, news: schemas.NewsCreate, db: Session = Depends(g
 
 
 @router.get("/", response_model=list[schemas.NewsRead])
-def read_news(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    news = crud.get_news(db, skip, limit)
+def read_news(q: str | None = None,skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    news = crud.get_news_list(db, q, skip, limit)
     return news
 
 

@@ -78,7 +78,7 @@ def get_events(
             )
         )
 
-    return query.offset(skip).limit(limit).all()
+    return query.order_by(models.Event.start_time.asc()).offset(skip).limit(limit).all()
 
 
 def get_event_by_title(db: Session, title: str):
@@ -120,14 +120,26 @@ def delete_event(db: Session, event_id: int):
     else:
         return None
 
-@dispatch(Session, int)
 def get_news(db: Session, news_id: int):
     return db.query(models.News).filter(models.News.id == news_id).first()
 
 
-@dispatch(Session, int, int)
-def get_news(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.News).offset(skip).limit(limit).all()
+def get_news_list(db: Session, q: str | None = None, skip: int = 0, limit: int = 100):
+    query = db.query(models.News)
+
+    if q:
+        title_match = models.News.title.ilike(f"%{q}%")
+        desc_match = models.News.description.ilike(f"%{q}%")
+
+        query = query.filter(or_(title_match, desc_match)).order_by(
+            case(
+                (title_match, 0),
+                (desc_match, 1),
+                else_=2
+            )
+        )
+
+    return query.order_by(models.News.id.desc()).offset(skip).limit(limit).all()
 
 
 def get_news_by_title(db: Session, title: str):
@@ -304,9 +316,10 @@ def delete_tag(db: Session, name: str):
 def create_images(files: list[UploadFile] | None = None):
     # Создаем путь к директории
     dir_path = f"files/"
+
+    saved_files = []
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
-        saved_files = []
         
     # Сохраняем каждый файл
     for i, file_data in enumerate(files, 1):

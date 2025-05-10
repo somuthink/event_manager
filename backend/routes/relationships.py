@@ -67,7 +67,7 @@ def read_news_of_event(user: UserDep, event_id: int, db: Session = Depends(get_d
 
 @router.get("/event-news/news/{news_id}", response_model=list[schemas.EventRead])
 def read_event_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
-    db_news = crud.get_news(db, news_id)
+    db_news = crud.get_news(db, news_id )
     if db_news is None:
         raise HTTPException(status_code=404, detail="News Not Found")
     else:

@@ -55,6 +55,7 @@ class NewsBase(BaseModel):
     title: str | None = None
     description: str | None = None
     image: str
+    create_time: datetime
 
 
 class NewsRead(NewsBase):

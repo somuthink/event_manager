@@ -122,5 +122,6 @@ class News(Base):
     title = Column(String, index=True)
     description = Column(String)
     image = Column(String)
+    create_time = Column(DateTime)
     structure = Column(JSONB)
     events = relationship("Event", secondary="association_event_news", back_populates="news")
