@@ -7,5 +7,9 @@ logs
 .venv
 venv
 
+
+bun.lockb
+.projectile
+
 __pycache__
 /backend/files/
