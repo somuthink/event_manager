@@ -11,9 +11,14 @@ from ..deps import *
 router = APIRouter(prefix="/relationships")
 
 @router.get("/user-event/event/{event_id}", response_model=list[schemas.Association_user])
-@check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
-def read_members_of_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
+@owner_or_check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
+def read_members_of_event(user: UserDep, event_id: int, skip: int = 0, limit: int = 0,  db: Session = Depends(get_db)):
+
+    if skip > 1:
+        return []
+
     db_event = crud.get_event(db, event_id)
+
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event Not Found")
     else:
@@ -21,17 +26,24 @@ def read_members_of_event(user: UserDep, event_id: int, db: Session = Depends(ge
 
 
 @router.get("/user-event/user/{user_id}", response_model=list[schemas.Association_event])
-@check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
-def read_user_events(user: UserDep, user_id: int, db: Session = Depends(get_db)):
+@owner_or_check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
+def read_user_events(user: UserDep, user_id: int,  skip: int = 0, limit: int = 0, db: Session = Depends(get_db)):
+
+    if skip > 1:
+        return []
+
     db_user = crud.get_user(db, user_id)
+
     if db_user is None:
         raise HTTPException(status_code=404, detail="User Not Found")
+    elif  limit == 1:
+        return [db_user.events[0]]
     else:
         return db_user.events
 
 
 @router.post("/user-event", response_model=schemas.Association)
-@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.USER)])
+@owner_or_check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.USER)])
 def create_user_event(user: UserDep, user_id: int, event_id: int, extra_data: dict, db: Session = Depends(get_db)):
     if crud.get_user(db, user_id) is None or crud.get_event(db, event_id) is None:
         raise HTTPException(status_code=404, detail="Event or User Not Found")
@@ -42,7 +54,7 @@ def create_user_event(user: UserDep, user_id: int, event_id: int, extra_data: di
 
 
 @router.delete("/user-event", response_model=schemas.Association)
-@check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.USER)])
+@owner_or_check([Right(Access.UPDATE, Model.EVENT), Right(Access.UPDATE, Model.USER)])
 def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     db_event = crud.get_event(db, event_id)
@@ -57,10 +69,17 @@ def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = 
 
 
 @router.get("/event-news/event/{event_id}", response_model=list[schemas.NewsRead])
-def read_news_of_event(user: UserDep, event_id: int, db: Session = Depends(get_db)):
+def read_news_of_event(user: UserDep, event_id: int,  skip: int = 0, limit: int = 0, db: Session = Depends(get_db)):
+
+    if skip > 1:
+        return []
+
     db_event = crud.get_event(db, event_id)
+
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event Not Found")
+    elif limit == 1:
+        return [db_event.news[0]]
     else:
         return db_event.news
 

@@ -1,9 +1,8 @@
 "use client"
 
-import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
     Command,
@@ -18,31 +17,30 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 
-interface Item {
-    name: string
-}
 
 interface BaseComboBoxProps<T> {
-  placeholder: string
-  description: string
-  data: T[]
+    placeholder: string
+    description: string
+    data: T[]
+    onInputChange?: (e: string) => void
 }
 
 interface ComboBoxProps<T> extends BaseComboBoxProps<T> {
-  value: T | null
-  setValue: (value: T | null) => void
+    value: T | null
+    setValue: React.Dispatch<React.SetStateAction<T>>
 }
 
 interface MultiComboBoxProps<T> extends BaseComboBoxProps<T> {
-  values: T[]
-  setValues: (values: T[]) => void
+    values: T[]
+    setValues: React.Dispatch<React.SetStateAction<T[]>>
 }
 
 
 
-export function ComboBox<T extends { name: string }>({ placeholder, description, data, value, setValue }: ComboBoxProps<T>) {
+export function ComboBox<T extends { name: string }>({ placeholder, description, data, value, setValue, onInputChange }: ComboBoxProps<T>) {
     const [open, setOpen] = React.useState(false)
 
     return (
@@ -60,7 +58,7 @@ export function ComboBox<T extends { name: string }>({ placeholder, description,
             </PopoverTrigger>
             <PopoverContent className="w-xl p-0">
                 <Command>
-                    <CommandInput placeholder={description} />
+                    <CommandInput placeholder={description} onValueChange={onInputChange} />
                     <CommandList>
                         <CommandEmpty>No item found.</CommandEmpty>
                         <CommandGroup>
@@ -91,11 +89,11 @@ export function ComboBox<T extends { name: string }>({ placeholder, description,
 }
 
 
-export function MultiComboBox<T extends { name: string }>({ data, placeholder, description, values, setValues }: MultiComboBoxProps<T>) {
+export function MultiComboBox<T extends { name: string }>({ data, placeholder, description, values, setValues, onInputChange }: MultiComboBoxProps<T>) {
     const [open, setOpen] = React.useState(false)
 
-    const toggleValue = (item: Item) => {
-        setValues(prev => {
+    const toggleValue = (item: T) => {
+        setValues((prev: T[]) => {
             if (prev.some(v => v.name === item.name)) {
                 return prev.filter(v => v.name !== item.name)
             } else {
@@ -113,17 +111,17 @@ export function MultiComboBox<T extends { name: string }>({ data, placeholder, d
                     aria-expanded={open}
                     className={`w-full justify-between  font-normal border px-5 ${!values.length && "text-muted-foreground"}`}
                 >
-                  <div className="w-full justify-center">
-                    {values.length
-                        ? `${values[0].name}${values.length > 1 ? "..." : ""}`
-                        : placeholder}
-                  </div>
+                    <div className="w-full justify-center">
+                        {values.length
+                            ? `${values[0].name}${values.length > 1 ? "..." : ""}`
+                            : placeholder}
+                    </div>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-xl p-0">
                 <Command>
-                    <CommandInput placeholder={description} />
+                    <CommandInput placeholder={description} onValueChange={onInputChange} />
                     <CommandList>
                         <CommandEmpty>No item found.</CommandEmpty>
                         <CommandGroup>

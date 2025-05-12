@@ -139,7 +139,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     refresh_token_expires = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
 
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username, "id" : user.id, "org" : user.is_organizer}, expires_delta=access_token_expires
     )
     refresh_token = create_refresh_token(
         data={"sub": user.username}, expires_delta=refresh_token_expires

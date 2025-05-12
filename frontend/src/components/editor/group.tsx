@@ -10,7 +10,7 @@ interface CreateGroupProps {
 export const CreateGroup = ({ name, children }: CreateGroupProps) => {
 
     return (
-        <div className="w-full flex flex-col rounded-2xl  border-1 border-accent-foreground border-dashed  ">
+        <div className="w-full flex flex-col rounded-2xl  border-1 border-accent-foreground border-dashed bg-background  ">
 
             <a className="text-primary/80 border-b-1 px-4 py-2   border-accent-foreground border-dashed w-full">{name}</a>
 

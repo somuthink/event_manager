@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
+@plugin "tailwindcss-bg-patterns";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,6 +14,42 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+}
+
+@theme {
+  --animate-enter-up: enter-up 0.5s ease-in-out forwards;
+  --animate-enter-left: enter-left 0.5s ease-in-out forwards;
+
+  @keyframes enter-up {
+    0% {
+      opacity: 0;
+      scale: 1;
+      transform: translateY(-2rem);
+      filter: blur(4px);
+    }
+    100% {
+        opacity: 100;
+        transform: translateY(0);
+        scale: 1;
+        filter: blur(0);
+    }
+  }
+
+
+  @keyframes enter-left {
+    0% {
+      opacity: 0;
+      scale: 1;
+      transform: translatex(-2rem);
+      filter: blur(4px);
+    }
+    100% {
+        opacity: 100;
+        transform: translateY(0);
+        scale: 1;
+        filter: blur(0);
+    }
   }
 }
 
@@ -70,6 +107,7 @@
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
 }
+
 
 @theme inline {
   --color-background: var(--background);

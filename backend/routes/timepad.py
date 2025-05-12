@@ -39,11 +39,7 @@ def read_user_entries(user: UserDep, user_id: int, db: Session = Depends(get_db)
 @router.get("/event/{event_id}", response_model=list[schemas.Entry])
 @check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
 def read_user_entries(user: UserDep, event_id: int, db: Session = Depends(get_db)):
-    db_event = crud.get_event(db, event_id)
-    if db_event is None:
-        raise HTTPException(status_code=404, detail="Event Not Found")
-    else:
-        return db_event.entries
+    return crud.get_event_entries(db, event_id, event_id)
 
 
 @router.delete("/", response_model=schemas.EntryRead)

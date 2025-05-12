@@ -1,36 +1,36 @@
-import YooptaEditor, { createYooptaEditor, SlateElement, YooptaPlugin, YooptaContentValue, YooptaOnChangeOptions } from '@yoopta/editor';
+import YooptaEditor, { createYooptaEditor, SlateElement, YooptaContentValue, YooptaOnChangeOptions, YooptaPlugin } from '@yoopta/editor';
 
-import Paragraph from '@yoopta/paragraph';
-import Blockquote from '@yoopta/blockquote';
-import Image from '@yoopta/image';
-import Video from '@yoopta/video';
-import Link from '@yoopta/link';
-import File from '@yoopta/file';
 import Accordion from '@yoopta/accordion';
-import { NumberedList, BulletedList, TodoList } from '@yoopta/lists';
-import { Bold, Italic, Underline, Strike, Highlight } from '@yoopta/marks';
-import { HeadingOne, HeadingThree, HeadingTwo } from '@yoopta/headings';
-import Divider from '@yoopta/divider';
 import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list';
-import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
+import Blockquote from '@yoopta/blockquote';
+import Divider from '@yoopta/divider';
+import File from '@yoopta/file';
+import { HeadingOne, HeadingThree, HeadingTwo } from '@yoopta/headings';
+import Image from '@yoopta/image';
+import Link from '@yoopta/link';
 import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool';
+import { BulletedList, NumberedList, TodoList } from '@yoopta/lists';
+import { Bold, Highlight, Italic, Strike, Underline } from '@yoopta/marks';
+import Paragraph from '@yoopta/paragraph';
+import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
+import Video from '@yoopta/video';
 
-import {  useMemo, useRef } from 'react';
-import { TypographyP } from '@/components/libraries/shadcn/TypographyP';
+import { TypographyBlockquote } from '@/components/libraries/shadcn/TypographyBlockquote';
 import { TypographyH1 } from '@/components/libraries/shadcn/TypographyH1';
 import { TypographyH2 } from '@/components/libraries/shadcn/TypographyH2';
 import { TypographyH3 } from '@/components/libraries/shadcn/TypographyH3';
-import { TypographyBlockquote } from '@/components/libraries/shadcn/TypographyBlockquote';
 import { TypographyLink } from '@/components/libraries/shadcn/TypographyLink';
+import { TypographyP } from '@/components/libraries/shadcn/TypographyP';
+import { useMemo, useRef } from 'react';
 
 
+import { UploadFile } from '@/api/upload';
 import {
     AccordionList,
     AccordionListItem,
     AccordionListItemContent,
     AccordionListItemHeading,
 } from '@/components/libraries/shadcn/Accordion';
-import { UploadFile } from '@/api/upload';
 
 const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Record<string, unknown>>[] => [
     Paragraph.extend({
@@ -85,9 +85,9 @@ const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Recor
     Image.extend({
         options: {
             async onUpload(file) {
-              UploadFile(file) 
+                UploadFile(file)
                 return {
-                  src: `/api/files/?filename=${file.name}`,
+                    src: `/api/files/?filename=${file.name}`,
                     alt: 'not implemented yet',
                     sizes: {
                         width: 500,
@@ -100,9 +100,9 @@ const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Recor
     Video.extend({
         options: {
             onUpload: async (file) => {
-              UploadFile(file)
+                UploadFile(file)
                 return {
-                  src: `/api/files/?filename=${file.name}`,
+                    src: `/api/files/?filename=${file.name}`,
                     alt: 'not implemented yet',
                     sizes: {
                         width: 500,
@@ -118,9 +118,9 @@ const getPlugins = (): readonly YooptaPlugin<Record<string, SlateElement>, Recor
     File.extend({
         options: {
             async onUpload(file) {
-              UploadFile(file) 
+                UploadFile(file)
                 return {
-                  src: `/api/files/?filename=${file.name}`,
+                    src: `/api/files/?filename=${file.name}`,
                     alt: 'not implemented yet',
                     sizes: {
                         width: 500,
@@ -159,7 +159,7 @@ interface YooptaCnProps {
     setValue: React.Dispatch<React.SetStateAction<object>>
 }
 
-export const YooptaCn = ({value, setValue} : YooptaCnProps) => {
+export const YooptaCn = ({ value, setValue }: YooptaCnProps) => {
     const editor = useMemo(() => createYooptaEditor(), []);
     const selectionRef = useRef(null);
 
@@ -193,29 +193,30 @@ export const YooptaCn = ({value, setValue} : YooptaCnProps) => {
 }
 
 
-export const ReadOnlyYoopta = ({value, className} : {value : Object, className : string}) => {
-  const editor = useMemo(() => createYooptaEditor(), []);
-  const selectionRef = useRef(null);
+export const ReadOnlyYoopta = ({ value, className }: { value: Object, className: string }) => {
+    const editor = useMemo(() => createYooptaEditor(), []);
+    const selectionRef = useRef(null);
 
 
-  const plugins = useMemo(() => getPlugins(), []);
+    const plugins = useMemo(() => getPlugins(), []);
 
-  return (
-    <div
-      className={className}
-      ref={selectionRef}
-    >
-      <YooptaEditor
-        editor={editor}
-        plugins={plugins}
-        tools={TOOLS}
-        marks={MARKS}
-        selectionBoxRoot={selectionRef}
-        value={value as YooptaContentValue}
-        autoFocus
-        readOnly
-      />
-    </div>
-  );
+    return (
+        <div
+            className={className}
+            ref={selectionRef}
+        >
+            <YooptaEditor
+                width="full"
+                editor={editor}
+                plugins={plugins}
+                tools={TOOLS}
+                marks={MARKS}
+                selectionBoxRoot={selectionRef}
+                value={value as YooptaContentValue}
+                autoFocus
+                readOnly
+            />
+        </div>
+    );
 }
 

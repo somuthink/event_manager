@@ -78,7 +78,7 @@ def get_events(
             )
         )
 
-    return query.order_by(models.Event.start_time.asc()).offset(skip).limit(limit).all()
+    return query.order_by(models.Event.start_time.desc()).offset(skip).limit(limit).all()
 
 
 def get_event_by_title(db: Session, title: str):
@@ -276,6 +276,10 @@ def get_entry(db: Session, entry_id: int):
 
 def get_entries(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Entry).offset(skip).limit(limit).all()
+
+
+def get_event_entries(db: Session, event_id : int,  skip: int = 0, limit: int = 100):
+    return db.query(models.Entry).filter(models.Entry.event_id == event_id ).order_by(models.Entry.time.asc()).offset(skip).limit(limit).all()
 
 
 def delete_entry(db: Session, entry_id: int):

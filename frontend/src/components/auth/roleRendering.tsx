@@ -1,8 +1,8 @@
 import { useAuth } from "@/contexts/authContext";
 import React from "react";
 
-export const OrgOnly = ({ children }: { children: React.ReactNode }) => {
+export const RoleConditional = ({ children, organizer = false }: { children: React.ReactNode, organizer?: boolean }) => {
     const { isOrganizer } = useAuth();
-    return isOrganizer ? <>{children}</> : null;
+    return (isOrganizer === organizer) && <>{children}</>;
 };
 

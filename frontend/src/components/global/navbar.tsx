@@ -14,19 +14,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const NavItems: NavItem[] = [
     {
-        name: "Новости",
+        name: "Главная",
         link: "/",
+        description: "Просмотреть информацию о себе и записях на мероприятия",
+    },
+    {
+        name: "Новости",
+        link: "/news",
         description: "Просмотреть новости связанные с мероприятиями",
     },
     {
         name: "Мероприятия",
         link: "/events",
         description: "Просмотреть все мероприятия списком или карточками",
-    },
-    {
-        name: "Участники",
-        link: "/participants",
-        description: "Отметить или посмотреть информацию об всех участниках",
     },
 ];
 

@@ -1,24 +1,27 @@
-import { Button } from "@/components/ui/button";
-import { useNavigate, useLocation } from "react-router-dom";
-import { DatePickerWithRange } from "@/components/input/dateRangePicker"
-import { DateRange } from "react-day-picker"
-import { addDays } from "date-fns"
-import { useEffect, useRef, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton"
-import { YandexMap } from "@/components/ymap/map";
-import { YooptaCn } from "@/components/editor/yopta";
-import { Input } from "@/components/ui/input";
-import { MultiComboBox } from "@/components/input/combo";
-import { Combo, Event, Tag } from "@/interfaces/interfaces"
-import { CreateGroup } from "@/components/editor/group";
-import { EventCard } from "@/components/card/eventCard";
 import { axiosInst } from "@/api/axios";
 import { UploadFile } from "@/api/upload";
+import { EventCard } from "@/components/card/eventCard";
+import { CreateGroup } from "@/components/editor/group";
+import { YooptaCn } from "@/components/editor/yopta";
+import { MultiComboBox } from "@/components/input/combo";
+import { DatePickerWithRange } from "@/components/input/dateRangePicker";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Event, Tag, ToastInfo } from "@/interfaces";
+import { addDays } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import placeholder from "@/assets/placeholder.png"
+import { parseHttpError } from "@/lib/utils";
 
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 export const CreateEventPage = () => {
+
+
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -38,12 +41,6 @@ export const CreateEventPage = () => {
         from: new Date(),
         to: addDays(new Date(), 2),
     })
-
-
-    // const tags: Combo[] = [
-    //     { value: 'ДМ', label: 'Дворец Молодежи' },
-    //     { value: 'IT куб', label: 'IT куб' },
-    // ];
 
     const [bannerPreview, setBannerPreview] = useState<string>("")
 
@@ -94,16 +91,31 @@ export const CreateEventPage = () => {
         }
     };
 
-    const SaveEvent = () => {
+    const saveEvent = async () => {
+        let toastInfo: ToastInfo = {
+            variant: "default",
+            title: "Мероприятие создано успешно",
+            description: eventData.title,
+        };
 
-        axiosInst.post("/events/", eventData)
-        navigate("/events")
+        try {
+            await axiosInst.post("/events/", eventData);
+        } catch (err: unknown) {
+            toastInfo = parseHttpError(err, "Ошибка в создании мероприятия", eventData.title);
+        }
 
+        toast({
+            variant: toastInfo.variant,
+            title: toastInfo.title,
+            description: toastInfo.description,
+            action: <ToastAction altText="Создать еще одно">Создать еще одно</ToastAction>,
+        });
 
-    }
+        navigate("/events");
+    };
 
     useEffect(() => {
-      setEventData((prev) => ({ ...prev, title: value.title.value[0].children[0].text, description: value.description.value[0].children[0].text , structure: value}));
+        setEventData((prev: Object) => ({ ...prev, title: value.title.value[0].children[0].text, description: value.description.value[0].children[0].text, structure: value }));
     }
         , [value]
     )
@@ -141,14 +153,14 @@ export const CreateEventPage = () => {
 
 
     return (
-        <div className="flex flex-col  w-4/5 items-center    gap-5  ">
+        <div className="flex flex-col  w-4/5 items-center  gap-5 ">
 
+            <div className="pattern-dots pattern-gray-500 pattern-bg-white 
+  pattern-size-6 pattern-opacity-10 w-full h-full fixed inset-0 z-[-100] "></div>
 
             <CreateGroup name="мета-данные">
 
-                <div className="flex flex-row gap-4 w-full">
-
-
+                <div className="flex flex-row gap-4 w-full  ">
                     <DatePickerWithRange date={date} setDate={setDate} className="w-full" />
                     <Input placeholder="Адрес проведения" className="w-full" onBlur={(e) => {
                         setEventData((prev) => ({
@@ -198,13 +210,11 @@ export const CreateEventPage = () => {
                         <a className="w-full text-accent-foreground/70 opacity-0 lg:opacity-100 ">в качествей баннера лучше используйте фото, изображения без текста</a>
                     </div>
                 </div>
-            </CreateGroup >
+            </CreateGroup>
 
             <CreateGroup name="предпросмотр карточки" >
-                <div className="w-2/3 p-4   ">
-
-                    <EventCard event={eventData} />
-
+                <div className="w-2/3 p-4 gap-2     ">
+                    <EventCard {...eventData} />
                 </div>
             </CreateGroup>
 
@@ -215,7 +225,7 @@ export const CreateEventPage = () => {
 
 
 
-            <Button onClick={SaveEvent}>Создать</Button>
-        </div >
+            <Button onClick={saveEvent}>Создать</Button>
+        </div>
     );
 }
