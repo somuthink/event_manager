@@ -11,7 +11,7 @@ from ..deps import *
 router = APIRouter(prefix="/relationships")
 
 @router.get("/user-event/event/{event_id}", response_model=list[schemas.Association_user])
-@owner_or_check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
+@check([Right(Access.UPDATE, Model.EVENT), Right(Access.READ, Model.USER)])
 def read_members_of_event(user: UserDep, event_id: int, skip: int = 0, limit: int = 0,  db: Session = Depends(get_db)):
 
     if skip > 1:
@@ -69,7 +69,7 @@ def delete_user_event(user: UserDep, user_id: int, event_id: int, db: Session = 
 
 
 @router.get("/event-news/event/{event_id}", response_model=list[schemas.NewsRead])
-def read_news_of_event(user: UserDep, event_id: int,  skip: int = 0, limit: int = 0, db: Session = Depends(get_db)):
+def read_event_news(user: UserDep, event_id: int,  skip: int = 0, limit: int = 0, db: Session = Depends(get_db)):
 
     if skip > 1:
         return []
@@ -85,7 +85,7 @@ def read_news_of_event(user: UserDep, event_id: int,  skip: int = 0, limit: int 
 
 
 @router.get("/event-news/news/{news_id}", response_model=list[schemas.EventRead])
-def read_event_news(user: UserDep, news_id: int, db: Session = Depends(get_db)):
+def read_news_events(user: UserDep, news_id: int, db: Session = Depends(get_db)):
     db_news = crud.get_news(db, news_id )
     if db_news is None:
         raise HTTPException(status_code=404, detail="News Not Found")

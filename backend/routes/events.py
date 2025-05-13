@@ -17,7 +17,9 @@ def create_event(user: UserDep, event: schemas.EventCreate, db: Session = Depend
     if db_event:
         raise HTTPException(status_code=404, detail="Event already exists")
     else:
-        return crud.create_event(db, event)
+        db_event = crud.create_event(db, event)
+        crud.create_access_event_association(db, user.id, db_event.id, 3)
+        return db_event
 
 
 @router.get("/", response_model=list[schemas.EventRead])

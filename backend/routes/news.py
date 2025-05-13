@@ -17,8 +17,9 @@ def create_news(user: UserDep, news: schemas.NewsCreate, db: Session = Depends(g
     if db_news:
         raise HTTPException(status_code=404, detail="News already exists")
     else:
-        return crud.create_news(db, news)
-
+        db_news = crud.create_news(db, news)
+        crud.create_access_news_association(db, user.id, db_news.id, 3)
+        return db_news
 
 @router.get("/", response_model=list[schemas.NewsRead])
 def read_news(q: str | None = None,skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
