@@ -38,8 +38,8 @@ def update_user(db: Session, user_id: int, updated_user: schemas.User):
     if user_to_update:
         for key, value in updated_user.model_dump(exclude_unset=True).items():
             setattr(user_to_update, key, value)
-            db.commit()
-            db.refresh(user_to_update)
+        db.commit()
+        db.refresh(user_to_update)
         return user_to_update
     else:
         return None
@@ -104,8 +104,8 @@ def update_event(db: Session, event_id: int, updated_event: schemas.EventBase):
         event_to_update.tags = [get_tag(db, tag.name) for tag in updated_event.tags]
         for key, value in data.items():
             setattr(event_to_update, key, value)
-            db.commit()
-            db.refresh(event_to_update)
+        db.commit()
+        db.refresh(event_to_update)
         return event_to_update
     else:
         return None
@@ -159,8 +159,8 @@ def update_news(db: Session, news_id: int, updated_news: schemas.NewsBase):
     if news_to_update:
         for key, value in updated_news.model_dump(exclude_unset=True).items():
             setattr(news_to_update, key, value)
-            db.commit()
-            db.refresh(news_to_update)
+        db.commit()
+        db.refresh(news_to_update)
         return news_to_update
     else:
         return None
